@@ -19,19 +19,11 @@ if (-not (Get-Module -ListAvailable -Name WindowsUpdate)) {
     Install-Module -Name WindowsUpdate -Force -Scope CurrentUser -Verbose
 }
 
-#Importer le module WindowsUpdate
-Import-Module WindowsUpdate
 
-#Rechercher les mises à jour disponibles
-$updates = Get-WindowsUpdate -Online
 
-#Vérifier s'il y a des mises à jour disponibles
-if ($updates.Count -gt 0) {
-    Write-Host "Les mises à jour suivantes sont disponibles :"
-    $updates | Format-Table -Property Title, KB, Description -AutoSize
-} else {
-    Write-Host "Aucune mise à jour n'est disponible pour le moment."
-}
+
+
+
 ```
 
 Ce script vérifie d'abord si le module `WindowsUpdate` est installé. Si ce n'est pas le cas, il l'installe automatiquement. Ensuite, il importe le module `WindowsUpdate` et utilise la commande `Get-WindowsUpdate` pour rechercher les mises à jour disponibles en ligne. Enfin, il affiche les mises à jour disponibles avec leurs titres, numéros KB et descriptions.
