@@ -54,10 +54,10 @@ fi
 ### PowerShell
 
 ```
-\#Demande à l'utilisateur le chemin complet du dossier à créer
+#Demande à l'utilisateur le chemin complet du dossier à créer
 $creationDossierps = Read-Host "Entrez le chemin complet du dossier à créer"
 
-\#Vérifie si le chemin spécifié existe déjà
+#Vérifie si le chemin spécifié existe déjà
 if (!(Test-Path $creationDossierps)) {
     # Crée le répertoire s'il n'existe pas déjà
     New-Item -Path $creationDossierps -ItemType Directory -Force
@@ -72,19 +72,45 @@ On utilise l'option ``-Force`` si nous n'avons pas les droits administrateurs.
 ### Shell Bash
 
 ```
-
-```
+# Demande à l'utilisateur de saisir le chemin complet du répertoire à modifier
+read -p "Entrez le chemin complet du répertoire à modifier :" modifCheminsh
+  
+#Vérification existence du chemin et du dossier
+if [ -d "$modifCheminsh" ];
+then
+    #On demande le nouveau nom qu'il souhaite donner au dossier
+    read -p "Veuillez indiquer un nouveau nom pour ce dossier :" nouveauNomsh
+    mv $modifCheminsh $nouveauNomsh
+    echo "Le dossier a été renommé avec succès"
+else
+    echo "La modification n'a pas pu aboutir"
+    exit 0
+fi
 
 ### PowerShell
 
-```
 
-```
+#Demande à l'utilisateur le chemin complet du dossier à modifier
+
+$modifCheminps = Read-Host "Veuillez entrer le chemin complet du dossier que vous souhaitez modifier :"
+
+#Vérification de l'existence de ce dossier
+if (Test-Path $modifDossierps -PathType Container "$modifDossierps") {
+	#On demande à l'utilisateur le nouveau nom
+	$nouveauNomps = Read-Host "Veuillez indiquer un nouveau nom pour ce dossier :"
+	#On renomme le dossier en question
+	Rename-Item -Path $modifCheminps -NewName $nouveauNomps -Force
+	Write-Host "Le dossier a été renommé avec succès."
+} else {
+	Write-Host "La modification n'a pas pu aboutir."
+}
+
+
 ## Suppression de répertoire
 
 ### Shell Bash
 
-```
+
 #Demande à l'utilisateur s'il souhaite supprimer un dossier
 read -p "Voulez-vous supprimer un répertoire ? Indiquez le chemin complet du répertoire :" supprDossiersh
 
@@ -97,11 +123,11 @@ else
 	echo "Le dossier $supprDossiersh ne peut être supprimé car il n'existe pas !"
 	exit 0
 fi
-```
+
 
 ### PowerShell
 
-```
+
 #Demande à l'utilisateur s'il souhaite supprimer un dossier
 $supprDossierps = Read-Host "Voulez-vous supprimer un dossier ? Indiquez le chemin complet du dossier :"
 
@@ -113,7 +139,7 @@ if (Test-Path $supprDossierps -PathType Container) {
 } else {
 	Write-Host "Le dossier $supprDossierps n'existe pas et ne peut donc être supprimé"
 }
-```
+
 ## Prise de main à distance
 
 ### Shell Bash
