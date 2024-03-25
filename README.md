@@ -22,10 +22,14 @@ Le serveur Microsoft Windows Server 2022 21H2 (inclus Powershell Core 7.4 LTS) :
 
 Les 2 clients Linux Ubuntu 22.04 LTS :
 
+1) Client 1 Windows :
+
 - HostName : CLILIN01
 - Login : wilder
 - Mot de passe : Azerty1*
 - IP fixe : 172.16.10.20/24
+
+2) Client 2 Windows :
 
 - HostName : CLILIN02
 - Login : wilder
@@ -34,10 +38,14 @@ Les 2 clients Linux Ubuntu 22.04 LTS :
 
 Les 2 clients Microsoft Windows 10 Pro 22H2 :
 
+1) Client 1 Ubuntu :
+
 - HostName : CLIWIN01
 - Login : wilder
 - Mot de passe : Azerty1*
 - Adresse IP fixe : 172.16.10.30/24
+
+2) Client 2 Ubuntu
 
 - HostName : CLIWIN02
 - Login : wilder
