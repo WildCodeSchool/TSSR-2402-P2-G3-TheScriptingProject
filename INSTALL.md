@@ -67,6 +67,7 @@ if (!(Test-Path $creationDossierps)) {
 }
 ```
 On utilise l'option ``-Force`` si nous n'avons pas les droits administrateurs.
+
 ## Modification de répertoire
 
 ### Shell Bash
@@ -86,10 +87,11 @@ else
     echo "La modification n'a pas pu aboutir"
     exit 0
 fi
+```
 
 ### PowerShell
 
-
+```
 #Demande à l'utilisateur le chemin complet du dossier à modifier
 
 $modifCheminps = Read-Host "Veuillez entrer le chemin complet du dossier que vous souhaitez modifier :"
@@ -104,13 +106,13 @@ if (Test-Path $modifDossierps -PathType Container "$modifDossierps") {
 } else {
 	Write-Host "La modification n'a pas pu aboutir."
 }
-
+```
 
 ## Suppression de répertoire
 
 ### Shell Bash
 
-
+```
 #Demande à l'utilisateur s'il souhaite supprimer un dossier
 read -p "Voulez-vous supprimer un répertoire ? Indiquez le chemin complet du répertoire :" supprDossiersh
 
@@ -123,12 +125,13 @@ else
 	echo "Le dossier $supprDossiersh ne peut être supprimé car il n'existe pas !"
 	exit 0
 fi
-
+```
 
 ### PowerShell
 
 
-#Demande à l'utilisateur s'il souhaite supprimer un dossier
+```
+Demande à l'utilisateur s'il souhaite supprimer un dossier
 $supprDossierps = Read-Host "Voulez-vous supprimer un dossier ? Indiquez le chemin complet du dossier :"
 
 #On vérifie si le répertoire existe
@@ -139,6 +142,7 @@ if (Test-Path $supprDossierps -PathType Container) {
 } else {
 	Write-Host "Le dossier $supprDossierps n'existe pas et ne peut donc être supprimé"
 }
+```
 
 ## Prise de main à distance
 
