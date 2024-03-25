@@ -156,18 +156,51 @@ if (Test-Path $supprDossierps -PathType Container) {
 
 ### Shell Bash
 
-
+```
+#Affiche les règles actuelles du pare-feu
+ufw status
+```
 ### PowerShell
 
-
+```
+#Afficher les informations du pare-feu sur un profil réseau
+Get-NetFirewallProfile
+```
 ## Activation de pare-feu
 
 ### Shell Bash
 
-
+```
+#On souhaite activer les pare-feu
+sudo ufw enable
+```
 ### PowerShell
 
+```
+#On souhaite modifier et activer les profils réseau sur le pare-feu
+#Si l'on souhaite demander à l'utilisateur s'il veut impacter le Domaine et/ou le Privé et/ou le Public
+#On demande alors le/lesquels il souhaite activer
+$activationfwps = Read-Host "Quel(s) profil(s) réseau souhaitez-vous activer ? (1=Domaine,2=Privé,3=Public)"
 
+# Vérifier la saisie de l'utilisateur et activer les profils appropriés
+switch ($activationfwps) {
+    '1' {
+        Set-NetFirewallProfile -Profile Domain -Enabled True
+        Write-Host "Le profil de pare-feu Domaine a été activé."
+    }
+    '2' {
+        Set-NetFirewallProfile -Profile Private -Enabled True
+        Write-Host "Le profil de pare-feu Privé a été activé."
+    }
+    '3' {
+        Set-NetFirewallProfile -Profile Public -Enabled True
+        Write-Host "Le profil de pare-feu Public a été activé."
+    }
+    Default {
+        Write-Host "Choix invalide. Veuillez saisir 1, 2 ou 3 pour activer les profils de pare-feu correspondants."
+    }
+}
+```
 ## Désactivation du pare-feu
 
 ### Shell Bash
