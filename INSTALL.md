@@ -18,12 +18,14 @@ if (-not (Get-Module -ListAvailable -Name WindowsUpdate)) {
     Write-Host "Le module WindowsUpdate n'est pas installé. Installation en cours..."
     Install-Module -Name WindowsUpdate -Force -Scope CurrentUser -Verbose
 }
+#Si on veut lister les MaJ disponibles
+Get-WindowsUpdate
 
+#On souhaite intaller les MaJ en attente sur la machine
+Install-WindowsUpdate -AcceptAll 
 
-
-
-
-
+#Vérifier s'il y a un redémarrage en attente
+Get-WURebootStatus
 ```
 
 Ce script vérifie d'abord si le module `WindowsUpdate` est installé. Si ce n'est pas le cas, il l'installe automatiquement. Ensuite, il importe le module `WindowsUpdate` et utilise la commande `Get-WindowsUpdate` pour rechercher les mises à jour disponibles en ligne. Enfin, il affiche les mises à jour disponibles avec leurs titres, numéros KB et descriptions.
