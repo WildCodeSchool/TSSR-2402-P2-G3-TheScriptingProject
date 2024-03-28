@@ -1,53 +1,131 @@
 # TSSR-2402-P2-G3-TheScriptingProject
 
-##
+##  **Sommaire**
 
-##
+1) Présentation du Projet et Objectifs finaux
+
+2) Mise en contexte
+
+3) Présentation des membres du groupe et rôles par Sprint
+
+4) Choix techniques
+
+5) Difficultés rencontrées
+
+6) Solutions trouvées
+
+7) Next-step : Améliorations possibles
+
+8) Conclusion
+
+## **Présentation du Projet et Objectifs finaux**
+
+## **Mise en contexte**
+
+## **Présentation des membres du groupe et rôles par Sprint**
+
+Le groupe du Projet **_Scripting_** est composé de :
+* **Julien Guillot**
+* **Anthony Javault**
+* **Nicolas Maggirori**
+* **Sébastien Taiclet**
+
+### **Sprint 1 : semaine du 25 au 31 mars 2024**
+
+|PO|SM|
+|:-:|:-:|
+|Sébastien Taiclet|Nicolas Maggiori|
+
+Activités et répartitions des tâches
+
+||Julien Guillot|Anthony Javault|Nicolas Maggiori|Sébastien Taiclet|
+|:-:|:-:|:-:|:-:|:-:|
+|Création et partage Serveur Windows||x|||
+|Création et partage Serveur Debian|x||||
+|Création et partage Client Windows|||x||
+|Création et partage Client Ubuntu||||x|
+|Duplication des Clients Windows et Ubuntu|x|x|x|x|
+|Mise en réseau des éléments|x|x|x|x|
+|Recherche sur SSH||||x|
+|Installation SSH Serveur et Clients Linux|||||
+|Recherche et centralisation des commandes de script|x||x||
+|Conception du squelette de script||x|||
+|Préparation slides présentation|||x||
+
+### **Sprint 2 : semaine du 1 au 7 avril 2024**
+
+|PO|SM|
+|:-:|:-:|
+|||
+
+Activités et répartitions des tâches
+
+||Julien Guillot|Anthony Javault|Nicolas Maggiori|Sébastien Taiclet|
+|:-:|:-:|:-:|:-:|:-:|
+||||||
+||||||
+||||||
+|Préparation slides présentation|||||
+
+### **Sprint 3 : semaine du 8 au 14 avril 2024**
+
+|PO|SM|
+|:-:|:-:|
+|||
+
+Activités et répartitions des tâches
+
+||Julien Guillot|Anthony Javault|Nicolas Maggiori|Sébastien Taiclet|
+|:-:|:-:|:-:|:-:|:-:|
+||||||
+||||||
+||||||
+|Préparation slides présentation|||||
+
+### **Sprint 4 : semaine du 15 au 22 avril 2024**
+
+|PO|SM|
+|:-:|:-:|
+|||
+
+Activités et répartitions des tâches
+
+||Julien Guillot|Anthony Javault|Nicolas Maggiori|Sébastien Taiclet|
+|:-:|:-:|:-:|:-:|:-:|
+||||||
+||||||
+||||||
+|Préparation slides présentation|||||
 
 ## **Choix techniques et contraintes**
 
-Le Serveur Linux Debian 12.5 :
+### **Les Serveurs**
 
-- HostName : SRVLX01
-- Login : root
-- Mot de passe : Azerty1*
-- Adresse IP fixe : 172.16.10.10/24
+||Debian 12.5|Windows Server 2022|
+|:-:|:-:|:-:|
+|HostName|SRVLX01|SRVWIN01|
+|Login|root|administrator|
+|Password|Azerty1*|Azerty1*|
+|Ip fixe|172.16.10.10/24|172.16.10.5/24|
+|Spécificité||Powershell Core 7.4 LTS inclus|
 
-Le serveur Microsoft Windows Server 2022 21H2 (inclus Powershell Core 7.4 LTS) :
+### **Les Clients**
 
-- HostName : SRVWIN01
-- Login : administrator
-- Mot de passe : Azerty1*
-- Adresse IP fixe : 172.16.10.5/24
+||Ubuntu 22.04 LTS 01|Ubuntu 22.04 LTS 02| Windows 10 Pro 01|Windows 10 Pro 02|
+|:-:|:-:|:-:|:-:|:-:|
+|HostName|CLILIN01|CLILIN02|CLIWIN01|CLIWIN02|
+|Login|wilder|wilder|wilder|wilder|
+|Password|Azerty1*|Azerty1*|Azerty1*|Azerty1*|
+|Ip fixe|172.16.10.30/24|172.16.10.31/24|172.16.10.20/24|172.16.10.21/24|
 
-Les 2 clients Linux Ubuntu 22.04 LTS :
 
-1) Client 1 Windows :
 
-- HostName : CLILIN01
-- Login : wilder
-- Mot de passe : Azerty1*
-- IP fixe : 172.16.10.20/24
 
-2) Client 2 Windows :
 
-- HostName : CLILIN02
-- Login : wilder
-- Mot de passe : Azerty1*
-- IP fixe : 172.16.10.21/24
+## **Difficultés rencontrées**
 
-Les 2 clients Microsoft Windows 10 Pro 22H2 :
+## **Solutions trouvées**
 
-1) Client 1 Ubuntu :
+## **Next-step : Améliorations possibles**
 
-- HostName : CLIWIN01
-- Login : wilder
-- Mot de passe : Azerty1*
-- Adresse IP fixe : 172.16.10.30/24
-
-2) Client 2 Ubuntu
-
-- HostName : CLIWIN02
-- Login : wilder
-- Mot de passe : Azerty1*
-- Adresse IP fixe : 172.16.10.31/24
+## **Conclusion**
