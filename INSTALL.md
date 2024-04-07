@@ -21,7 +21,7 @@
 
 
 
-## ** Pré-requis techniques**
+## **Pré-requis techniques**
 
 ### **Les Serveurs**
 
