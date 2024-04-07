@@ -21,7 +21,7 @@
 
 
 
-## ** Pré-requis techniques*
+## ** Pré-requis techniques**
 
 ### **Les Serveurs**
 
@@ -72,7 +72,7 @@ Il vous faudra également donner les droits d'accés au scripts en terme d'exéc
 
 
 
-#### ** Installation et configuration sur Client _Windows 10 Pro_**
+#### **Installation et configuration sur Client _Windows 10 Pro_**
 
 
 
