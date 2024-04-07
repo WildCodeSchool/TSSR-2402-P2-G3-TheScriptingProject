@@ -1,3 +1,125 @@
+# **TSSR-2402-P2-G3-TheScriptingProject**
+
+## **Sommaire**
+
+1) Pré-requis techniques
+
+2) Installation des sources nécessaires au bon fonctionnement
+
+3) Aperçu et descriptif avancé des scripts
+
+4) 
+
+5) FAQ
+
+6) 
+
+
+
+
+
+
+
+
+## ** Pré-requis techniques*
+
+### **Les Serveurs**
+
+||Debian 12.5|Windows Server 2022|
+|:-:|:-:|:-:|
+|HostName|SRVLX01|SRVWIN01|
+|Login|root|administrator|
+|Password|Azerty1*|Azerty1*|
+|Ip fixe|172.16.10.10/24|172.16.10.5/24|
+|Spécificité||Powershell Core 7.4 LTS inclus|
+
+### **Les Clients**
+
+||Ubuntu 22.04 LTS 01|Ubuntu 22.04 LTS 02| Windows 10 Pro 01|Windows 10 Pro 02|
+|:-:|:-:|:-:|:-:|:-:|
+|HostName|CLILIN01|CLILIN02|CLIWIN01|CLIWIN02|
+|Login|wilder|wilder|wilder|wilder|
+|Password|Azerty1*|Azerty1*|Azerty1*|Azerty1*|
+|Ip fixe|172.16.10.30/24|172.16.10.31/24|172.16.10.20/24|172.16.10.21/24|
+
+### **Composants additionnels**
+
+Une fois les configurations faites, nous devons ajouter un lien _ssh_ entre les Serveurs et les Clients.
+
+Certains paquets supplémentaires peuvent être ajoutés afin de faciliter certaines commandes des scripts (mpstat, etc...).
+
+## **Installation des sources nécessaires au bon fonctionnement**
+
+Bien entendu, il est nécessaire avant toute chose de procéder à une mise à jour système, aussi bien sur les Serveurs, que sur les Clients
+
+* bash : (sudo) `apt update && apt upgrade -y`
+* Windows : Mise à jour système en mode graphique
+
+Il vous faudra également donner les droits d'accés au scripts en terme d'exécution, si cela n'est pas déjà fait.
+
+### **Installation et configuration ssh sur Linux**
+
+#### **Installation et configuration ssh sur _Debian_**
+
+
+#### **Installation et configuration ssh sur Client _Ubuntu_**
+
+
+
+### **Installation et configuration sur Windows**
+
+#### **Installation et configuration sur _Windows Server 2022_**
+
+
+
+#### ** Installation et configuration sur Client _Windows 10 Pro_**
+
+
+
+
+### **Installation et configurations des composants additionnels**
+
+
+
+
+
+
+
+
+
+
+
+## **Aperçu et descriptif avancé des scripts**
+
+
+
+
+
+
+
+
+
+
+
+## **FAQ**
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## Mise à jour du système
 
 ### Shell Bash
