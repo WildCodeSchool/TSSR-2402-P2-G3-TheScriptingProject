@@ -4,7 +4,7 @@ function Menu_principal_ps
 {
     $finished = $false
 
-    while (-not $finished) 
+    while ( -not $finished ) 
     {
         Write-Host "`nMenu action et information" -ForegroundColor Cyan
         Write-Host "1 - Action Utilisateur"
@@ -294,9 +294,9 @@ function Desinstaller_logiciel()
 
 function Execution_de_script()
 {
-function helloWorld()
+function scriptDansScript()
     {
-        .\helloworld.ps1
+        .\scriptDansScriptFonctionExec.ps1
     }
         While ( $true )
         { 
