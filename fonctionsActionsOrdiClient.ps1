@@ -369,8 +369,13 @@ function Historique_utilisateur {
 #6 Droits et permissions de l’utilisateur sur un dossier
 function Droit_sur_un_dossier {
     $dossier = Read-Host "Saisissez le chemin du dossier"
-    Get-Acl -Path $dossier | Select-Object -ExpandProperty Access | Where-Object { $_.IdentityReference -match $UserName 
-    }
+    Invoke-Command -ComputerName $ipAddress -ScriptBlock {
+    param($dossier, $UserName)
+    Get-Acl -Path $dossier | 
+    Select-Object -ExpandProperty Access | 
+    Where-Object { $_.IdentityReference -match $UserName }
+} -ArgumentList $dossier, $UserName
+
 
 }
 
