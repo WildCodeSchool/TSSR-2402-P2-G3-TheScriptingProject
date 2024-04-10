@@ -331,13 +331,17 @@ function Historique_utilisateur {
 #6 Droits et permissions de l’utilisateur sur un dossier
 function Droit_sur_un_dossier {
     $dossier = Read-Host "Saisissez le chemin du dossier"
-    
+    Get-Acl -Path $dossier | Select-Object -ExpandProperty Access | Where-Object { $_.IdentityReference -match $UserName 
+    }
+
 }
 
 #7 Droits/permissions de l’utilisateur sur un fichier
 function Droit_sur_un_fichier {
     $fichier = Read-Host "Saisissez le chemin du fichier"
-    
+    Get-Acl -Path $fichier | Select-Object -ExpandProperty Access | Where-Object { $_.IdentityReference -match $UserName 
+    }
+
 }
 #Menu actions ordinateur client
 #Développement de la fonction qui permettra de revenir au menu des actions sur l'ordi client
