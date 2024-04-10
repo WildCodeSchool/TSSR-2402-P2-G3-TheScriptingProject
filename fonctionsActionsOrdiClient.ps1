@@ -298,31 +298,33 @@ function fonction_menu_info_utilisateur {
 
 #1 Date de dernières connexion d'un utilisateur
 function Derniere_connection_utilisateur {
-    $lastUser = Read-Host "Rentrez un nom d'utilisateur :"
-    
+    $UserName = Read-Host "Rentrez un nom d'utilisateur "
+    Invoke-Command -ComputerName $ipAddress -ScriptBlock { Get-WinEvent -LogName Security | Where-Object {$_.ID -eq 4624} | Select-Object -Property TimeCreated, @{Name='UserName';Expression={$_.Properties[5].Value}} -First 1
+    }
 }
-
 #2 Date de dernière modification du mode de passe
 function Derniere_modification_mdp {
-    $mdpUser = Read-Host "Rentrez un nom d'utilisateur :"
-    
+    Read-Host "Rentrez un nom d'utilisateur "
+    Invoke-Command -ComputerName $ipAddress -ScriptBlock { Get-LocalUser | Select-Object Name, LastPasswordChangeTimestamp 
+    }
 }
 
 #3 Liste des sessions ouvertes par l'utilisateur
 function Liste_sessions_ouverte_par_utilisateur {
-    $sessUser = Read-Host "Rentrez un nom d'utilisateur :"
-    
+    Read-Host "Rentrez un nom d'utilisateur "
+    Invoke-Command -ComputerName $ipAddress -ScriptBlock { Get-WmiObject -Class Win32_ComputerSystem | Select-Object UserName
+    }
 }
 
 #4 Groupe d’appartenance d’un utilisateur
 function Groupe_utilisateur {
-    $grpUser = Read-Host "Rentrez un nom d'utilisateur :"
-    
+    $UserName = Read-Host "Rentrez un nom d'utilisateur "
+    Invoke-Command -ComputerName $ipAddress -ScriptBlock { Get-LocalGroup -Member $UserName
+    }
 }
-
 #5 Historique des commandes exécutées par l'utilisateur
 function Historique_utilisateur {
-    $hisUser = Read-Host "Rentrez un nom d'utilisateur :"
+    $ = Read-Host "Rentrez un nom d'utilisateur "
     
 }
 
