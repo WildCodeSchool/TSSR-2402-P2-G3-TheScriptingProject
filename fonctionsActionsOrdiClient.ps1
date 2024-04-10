@@ -659,42 +659,44 @@ function Desactivation_du_parefeu()
 function Installer_logiciel()
 {
     # Boucle pour demander à l'utilisateur une réponse valide
-    while ($true) {
+    while ($true) 
+    {
         # SWITCH, soit on va dans l'install, soit on revient au menu précédent
         $choix_installation_logiciel_oui_non = Read-Host "Voulez-vous poursuivre pour installer un logiciel sur le poste client (1) ou revenir au menu précédent (x) ?"
         Switch ($choix_installation_logiciel_oui_non)
         {
-            "1" {   
-                # On demande à l'utilisateur le programme qu'il souhaite installer 
-                $choix_logiciel_install_via_chocolatey = Read-Host "Quel logiciel souhaitez-vous installer sur le poste client "
-                # Avec la variable au-dessus, on vérifie si le logiciel donné fait déjà partie des logiciels installés
-                # On pose la condition SI, soit on va vers l'install, soit on dit qu'il est déjà installé et on ressaisit 
-                $logiciel_deja_install = choco list --local-only | Select-String -Pattern $choix_logiciel_install_via_chocolatey
-                If ($logiciel_deja_install)
-                {
-                    Write-Host "Le logiciel $choix_logiciel_install_via_chocolatey est déjà installé."
-                    #On renvoie au début de la fonction
-                    Installer_logiciel
+            "1" 
+                {   
+                    # On demande à l'utilisateur le programme qu'il souhaite installer 
+                    $choix_logiciel_install_via_chocolatey = Read-Host "Quel logiciel souhaitez-vous installer sur le poste client "
+                    # Avec la variable au-dessus, on vérifie si le logiciel donné fait déjà partie des logiciels installés
+                    # On pose la condition SI, soit on va vers l'install, soit on dit qu'il est déjà installé et on ressaisit 
+                    $logiciel_deja_install = choco list --local-only | Select-String -Pattern $choix_logiciel_install_via_chocolatey
+                    If ($logiciel_deja_install)
+                    {
+                        Write-Host "Le logiciel $choix_logiciel_install_via_chocolatey est déjà installé."
+                        #On renvoie au début de la fonction
+                        Installer_logiciel
+                    }
+                    Else
+                    {
+                        Write-Host "Installation en cours..."
+                        choco install $choix_logiciel_install_via_chocolatey -y
+                        Write-Host "Retour au menu précédent..."
+                        # Retourner au menu précédent
+                        Menu_actions_ordinateur_client
+                    }           
                 }
-                Else
-                {
-                    Write-Host "Installation en cours..."
-                    choco install $choix_logiciel_install_via_chocolatey -y
-                    Write-Host "Retour au menu précédent..."
-                    # Retourner au menu précédent
-                    Menu_actions_ordinateur_client
-                }           
-            }
 
-            "x" {
-                $reponse_valide = $true
-                Menu_actions_ordinateur_client
-            }
+            "x" 
+                {
+                    Menu_actions_ordinateur_client
+                }
 
             default 
                 {
-                Write-Host "Commande invalide, veuillez ressaisir :"
-            }
+                    Write-Host "Commande invalide, veuillez ressaisir :"
+                }
         }
     }
 }
@@ -705,11 +707,44 @@ function Installer_logiciel()
 
 function Desinstaller_logiciel()
 {
+    # Boucle pour demander à l'utilisateur une réponse valide
+    While ($true)
+    {
+        #SWITCH, soit on file dans le processus de désinstallation, soit on revient au menu précédent
+        $choix_desinstallation_logiciel_oui_non = Read-Host "Voulez-vous poursuivre pour désinstaller un logiciel sur le poste client (1) ou revenir au menu précédent (x) ?"
+        Switch ($choix_desinstallation_logiciel_oui_non)
+        {
+            "1" 
+                {
+                    #On demande à l'utilisateur de donner le nom du logiciel qu'il souhaite désinstaller
+                    $logiciel_pour_desinstallation = Read-Host "Veuillez donner le nom du logiciel que vous souhaitez désinstaller :"
+                    #On va vérifier l'existence de ce logiciel dans choco
+                    #Condition SI, soit on l'a et on le désinstalle, soit non et on demande de taper autre chose
+                    $verif_logiciel_pour_desinstallation = choco list --local-only | Select-String -Pattern $logiciel_pour_desinstallation
+                    
+                        If ($logiciel_pour_desinstallation)
+                        {
+                            Write-Host "Désinstallation en cours..."
+                            choco uninstall $logiciel_pour_desinstallation
+                            Write-Host "Retour au menu précédent..."
+                            Menu_actions_ordinateur_client
+                        }
+                        Else
+                        {
+                            Write-Host "Aucun logiciel portant le nom de $logiciel_pour_desinstallation n'a été trouvé sur cette machine."
+                            Desinstaller_logiciel
+                        }
+                }
 
-        Write-Host "Opération annulée. Retour au menu précédent..."
-        Start-Sleep -Seconds 2
-        Menu_actions_ordinateur_client
+            "x" 
+                {Menu_actions_ordinateur_client}
+
+            default 
+                {Write-Host "Commande invalide, veuillez ressaisir :"}
+        }
+    }
 }
+
 
 
 
