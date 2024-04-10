@@ -48,7 +48,7 @@ function fonction_menu_action_utilisateur {
         "4" { Desactivation_compte_utilisteur }
         "5" { Ajout_utilisateur_a_groupe }
         "6" { Supp_user_from_group }
-        "7" { Write-Host "retour au menu principal"; fonction_menu_principal }
+        "7" { Write-Host "retour au menu principal"; Menu_principal_ps }
         default { Write-Host "Commande invalide" }
     }
 }
@@ -168,7 +168,7 @@ function fonction_menu_info_ordinateur_client {
         "8" { Memoire_RAM_totale }
         "9" { Utilisation_du_disque }
         "10" { Utilisation_du_processeur }
-        "11" { Write-Host "Retour au menu principal"; fonction_menu_principal }
+        "11" { Write-Host "Retour au menu principal"; Menu_principal_ps }
         default { Write-Host "Commande invalide" }
     }
 }
@@ -291,7 +291,7 @@ function fonction_menu_info_utilisateur {
         "5" { Historique_utilisateur }
         "6" { Droit_sur_un_dossier }
         "7" { Droit_sur_un_fichier }
-        "8" { Write-Host "Retour au menu principal"; fonction_menu_principal }
+        "8" { Write-Host "Retour au menu principal"; Menu_principal_ps }
         default { Write-Host "Commande invalide" }
     }
 }
@@ -676,6 +676,6 @@ Clear-Host
 $ipAddress = Read-Host "Veuillez entrer l'adresse IP de la cible"
 Write-Host "Adresse IP saisie : $ipAddress" -ForegroundColor Green
 
-fonction_menu_principal
+Menu_principal_ps
 
 
