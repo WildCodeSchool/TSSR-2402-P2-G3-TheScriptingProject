@@ -604,10 +604,24 @@ function Definition_des_regles_de_parefeu()
 
 function Activation_du_parefeu()
 {
-
-        Write-Host "Opération annulée. Retour au menu précédent..."
-        Start-Sleep -Seconds 2
-        Menu_actions_ordinateur_client
+    #Boucle WHILE pour continuer tant qu'on n'a pas une bonne réponse
+    While ($true)
+    {
+        #On offre à l'utilisateur la possibilité de choisir sur quel profil il souhaite agir
+        #il pourra choisir une combinaison au besoin
+        $choix_activation_parefeu = Read-Host "Indiquer le ou les profils sur que vous souhaitez activer:`n - Domain (1)`n - Private (2)`n - Public (3)`n - Tous (4)`n - Revenir au menu précédent (q)`n"
+        Switch ($choix_activation_parefeu)
+        {
+            "1" {Set-NetFirewallProfile -Profile Domain -Enabled True; Write-Host "Pare-feu activé pour le profil Domain"; Start-Sleep -Seconds 2; Activation_du_parefeu}
+            "2" {Set-NetFirewallProfile -Profile Private -Enabled True; Write-Host "Pare-feu activé pour le profil Private"; Start-Sleep -Seconds 2; Activation_du_parefeu}
+            "3" {Set-NetFirewallProfile -Profile Public -Enabled True; Write-Host "Pare-feu activé pour le profil Public"; Start-Sleep -Seconds 2; Activation_du_parefeu}
+            "1,2" {Set-NetFirewallProfile -Profile Domain,Private -Enabled True; Write-Host "Pare-feu activé pour les profils Domain et Private"; Start-Sleep -Seconds 2; Activation_du_parefeu}
+            "2,3" {Set-NetFirewallProfile -Profile Private,Public -Enabled True; Write-Host "Pare-feu activé pour les profils Public et Private"; Start-Sleep -Seconds 2; Activation_du_parefeu}
+            "1,3" {Set-NetFirewallProfile -Profile Domain,Public -Enabled True; Write-Host "Pare-feu activé pour les profils Domain et Public"; Start-Sleep -Seconds 2; Activation_du_parefeu}
+            "4" {Set-NetFirewallProfile -Profile Domain,Private,Public -Enabled True; Write-Host "Pare-feu activé pour tous les profils"; Start-Sleep -Seconds 2; Activation_du_parefeu}
+            default {Write-Host "Commande invalide. Veuillez ressaisir"; Activation_du_parefeu}
+        }
+    }
 }
 
 
@@ -628,45 +642,45 @@ function Desactivation_du_parefeu()
 
 function Installer_logiciel()
 {
-# Boucle pour demander à l'utilisateur une réponse valide
-while ($true) {
-    # SWITCH, soit on va dans l'install, soit on revient au menu précédent
-    $choix_installation_logiciel_oui_non = Read-Host "Voulez-vous poursuivre pour installer un logiciel sur le poste client (1) ou revenir au menu précédent (x) ?"
-    Switch ($choix_installation_logiciel_oui_non)
-    {
-        "1" {   
-            # On demande à l'utilisateur le programme qu'il souhaite installer 
-            $choix_logiciel_install_via_chocolatey = Read-Host "Quel logiciel souhaitez-vous installer sur le poste client "
-            # Avec la variable au-dessus, on vérifie si le logiciel donné fait déjà partie des logiciels installés
-            # On pose la condition SI, soit on va vers l'install, soit on dit qu'il est déjà installé et on ressaisit 
-            $logiciel_deja_install = choco list --local-only | Select-String -Pattern $choix_logiciel_install_via_chocolatey
-            If ($logiciel_deja_install)
-            {
-                Write-Host "Le logiciel $choix_logiciel_install_via_chocolatey est déjà installé."
-                #On renvoie au début de la fonction
-                Installer_logiciel
+    # Boucle pour demander à l'utilisateur une réponse valide
+    while ($true) {
+        # SWITCH, soit on va dans l'install, soit on revient au menu précédent
+        $choix_installation_logiciel_oui_non = Read-Host "Voulez-vous poursuivre pour installer un logiciel sur le poste client (1) ou revenir au menu précédent (x) ?"
+        Switch ($choix_installation_logiciel_oui_non)
+        {
+            "1" {   
+                # On demande à l'utilisateur le programme qu'il souhaite installer 
+                $choix_logiciel_install_via_chocolatey = Read-Host "Quel logiciel souhaitez-vous installer sur le poste client "
+                # Avec la variable au-dessus, on vérifie si le logiciel donné fait déjà partie des logiciels installés
+                # On pose la condition SI, soit on va vers l'install, soit on dit qu'il est déjà installé et on ressaisit 
+                $logiciel_deja_install = choco list --local-only | Select-String -Pattern $choix_logiciel_install_via_chocolatey
+                If ($logiciel_deja_install)
+                {
+                    Write-Host "Le logiciel $choix_logiciel_install_via_chocolatey est déjà installé."
+                    #On renvoie au début de la fonction
+                    Installer_logiciel
+                }
+                Else
+                {
+                    Write-Host "Installation en cours..."
+                    choco install $choix_logiciel_install_via_chocolatey -y
+                    Write-Host "Retour au menu précédent..."
+                    # Retourner au menu précédent
+                    Menu_actions_ordinateur_client
+                }           
             }
-            Else
-            {
-                Write-Host "Installation en cours..."
-                choco install $choix_logiciel_install_via_chocolatey -y
-                Write-Host "Retour au menu précédent..."
-                # Retourner au menu précédent
+
+            "x" {
+                $reponse_valide = $true
                 Menu_actions_ordinateur_client
-            }           
-        }
+            }
 
-        "x" {
-            $reponse_valide = $true
-            Menu_actions_ordinateur_client
-        }
-
-        default 
-            {
-            Write-Host "Commande invalide, veuillez ressaisir :"
+            default 
+                {
+                Write-Host "Commande invalide, veuillez ressaisir :"
+            }
         }
     }
-}
 }
 
 
