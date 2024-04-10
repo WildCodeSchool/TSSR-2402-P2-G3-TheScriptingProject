@@ -54,18 +54,18 @@ function fonction_menu_action_utilisateur {
 }
 
 #Création de compte utilisateur local
-function Creation_compte_utilisateur_local {
+#function Creation_compte_utilisateur_local {
 #    $newUser = Read-Host "Merci de renseigner un nom de compte à créer :"
  #   $userExists = Get-LocalUser -Name $newUser -ErrorAction SilentlyContinue
 
   #  if ($userExists) {
    #     Write-Host "Utilisateur $newUser existe. Sortie du script."
-    }
+ #   }
     #else {
      #   New-LocalUser -Name $newUser
       #  Write-Host "Utilisateur $newUser créé !"
-    }
-}
+  #  }
+#}
 
 #Changement de mot de passe
 function Changement_de_mot_de_passe {
