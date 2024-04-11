@@ -156,6 +156,8 @@ function menuLogMenu {
         }
         "M" {
             # Redirection vers Menu Principal
+            $eventLog = "Redirection vers Menu Principal"
+            eventLogTask
             menuMainMenu
         }
         "x" {
