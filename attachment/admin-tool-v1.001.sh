@@ -1018,7 +1018,7 @@ function menu-info-client() {
             echo -e "\n\e[94mVersion de l'OS de $clientName : \e[0m\n"
             $sshCommand $dataCommand
             echo ""
-            eventLog ="Obtention de la version OS"
+            eventLog="Obtention de la version OS"
             # Prise de log + Retour au Menu en cours
             log-desktop
             log-event-server
@@ -1037,11 +1037,11 @@ function menu-info-client() {
             # Verrouillage de la cible pour les Logs
             targetLog="$clientName"
             # Verrouillage de la commande pour les Logs
-            dataCommand="lsbk | grep sd"
+            dataCommand="lsblk | grep sd"
             echo -e "\n\e[94mNombre de disques de $clientName : \e[0m\n"
             $sshCommand $dataCommand
             echo ""
-            eventLog ="Obtention du nombre de disques"
+            eventLog="Obtention du nombre de disques"
             # Prise de log + Retour au Menu en cours
             log-desktop
             log-event-server
@@ -1064,7 +1064,7 @@ function menu-info-client() {
             echo -e "\n\e[94mDétail des partitions de $clientName : \e[0m\n"
             $sshCommand $dataCommand
             echo ""
-            eventLog ="Obtention du détail des partitions"
+            eventLog="Obtention du détail des partitions"
             # Prise de log + Retour au Menu en cours
             log-desktop
             log-event-server
@@ -1087,7 +1087,7 @@ function menu-info-client() {
             echo -e "\n\e[94mListe des applications/paquets installés de $clientName : \e[0m\n"
             $sshCommand $dataCommand
             echo ""
-            eventLog ="Obtention de la liste des applications paquets installés"
+            eventLog="Obtention de la liste des applications paquets installés"
             # Prise de log + Retour au Menu en cours
             log-desktop
             log-event-server
@@ -1110,7 +1110,7 @@ function menu-info-client() {
             echo -e "\n\e[94mListe des services en cours d'exécution de $clientName : \e[0m\n"
             $sshCommand $dataCommand
             echo ""
-            eventLog ="Obtention de la liste des services en cours exécution"
+            eventLog="Obtention de la liste des services en cours exécution"
             # Prise de log + Retour au Menu en cours
             log-desktop
             log-event-server
@@ -1133,7 +1133,7 @@ function menu-info-client() {
             echo -e "\n\e[94mListe des utilisateurs locaux de $clientName : \e[0m\n"
             $sshCommand $dataCommand
             echo ""
-            eventLog ="Obtention de la liste des Utilisateurs locaux"
+            eventLog="Obtention de la liste des Utilisateurs locaux"
             # Prise de log + Retour au Menu en cours
             log-desktop
             log-event-server
@@ -1156,7 +1156,7 @@ function menu-info-client() {
             echo -e "\n\e[94mType de CPU de $clientName : \e[0m\n"
             $sshCommand $dataCommand
             echo ""
-            eventLog ="Obtention du type de CPU"
+            eventLog="Obtention du type de CPU"
             # Prise de log + Retour au Menu en cours
             log-desktop
             log-event-server
@@ -1179,7 +1179,7 @@ function menu-info-client() {
             echo -e "\n\e[94mDétail mémoire RAM de $clientName : \e[0m\n"
             $sshCommand $dataCommand
             echo ""
-            eventLog ="Obtention du détail RAM"
+            eventLog="Obtention du détail RAM"
             # Prise de log + Retour au Menu en cours
             log-desktop
             log-event-server
@@ -1202,7 +1202,7 @@ function menu-info-client() {
             echo -e "\n\e[94mDétail mémoire RAM de $clientName : \e[0m\n"
             $sshCommand $dataCommand
             echo ""
-            eventLog ="Obtention de utilisation RAM"
+            eventLog="Obtention de utilisation RAM"
             # Prise de log + Retour au Menu en cours
             log-desktop
             log-event-server
@@ -1225,7 +1225,7 @@ function menu-info-client() {
             echo -e "\n\e[94mDétail Utillisatioon du disque de $clientName : \e[0m\n"
             $sshCommand $dataCommand
             echo ""
-            eventLog ="Obtention du détail utilisation des disques"
+            eventLog="Obtention du détail utilisation des disques"
             # Prise de log + Retour au Menu en cours
             log-desktop
             log-event-server
@@ -1248,7 +1248,7 @@ function menu-info-client() {
             echo -e "\n\e[94mDétail Utillisatioon du processeur de $clientName : \e[0m\n"
             $sshCommand $dataCommand
             echo ""
-            eventLog ="Obtention de utilisation du Processeur"
+            eventLog="Obtention de utilisation du Processeur"
             # Prise de log + Retour au Menu en cours
             log-desktop
             log-event-server
