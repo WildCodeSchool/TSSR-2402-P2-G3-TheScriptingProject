@@ -804,7 +804,28 @@ function Creation_de_repertoire()
 
 function Suppression_de_repertoire()
 {
-
+    #On demande à l'utilisateur le nom du répertoire qu'il souhaite supprimer
+    #On vérifie son existence dans le répertoire courant 
+    #On pose la condition SI, soit il existe et on le supprime, soit non et on revient au menu précédent
+    $choix_dossier_suppression = Read-Host "Veuillez indiquer le nom du dossier que vous souhaitez supprimer (ATTENTION : vous perdrez en même temps ce qui se trouve dans ce dossier)"
+    If (Test-Path $choix_dossier_suppression)
+    {
+        Write-Host "Suppression du dossier $choix_dossier_suppression en cours..."
+        Start-Sleep -Seconds 1
+        Remove-Item -Path $choix_dossier_suppression -Recurse -Force
+        Write-Host "Le dossier $choix_dossier_suppression a été supprimé avec succès. Félicitations."
+        Start-Sleep -Seconds 1
+        Write-Host "Retour au menu précédent..."
+        Start-Sleep -Seconds 1
+        Menu_actions_ordinateur_client
+    }
+    Else
+    {
+        Write-Host "Le dossier $choix_dossier_suppression n'existe pas !"
+        Write-Host "Retour au menu précédent..."
+        Start-Sleep -Seconds 2
+        Menu_actions_ordinateur_client
+    }
 
 }
 
