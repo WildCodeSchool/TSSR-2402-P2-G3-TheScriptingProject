@@ -773,8 +773,29 @@ function scriptDansScript()
 
 function Creation_de_repertoire()
 {
-
-
+    #On demande à l'utilisateur le nom qu'il compte donner à son nouveau dossier
+    $choix_nom_creation_dossier = Read-Host "Veuillez saisir le nom du dossier que vous souhaitez créer"
+    #on vérifie son existence dans le répertoire courant avec traitement d'erreur ?
+    #On pose la condition SI, soit il n'existe pas et on le crée, soit il existe et on invite à donner un autre nom
+    If ( -not (Test-Path $choix_nom_creation_dossier))
+    {
+        $chemin_creation_dossier = $PWD.Path
+        New-Item -Path $chemin_creation_dossier -ItemType Directory -Name $choix_nom_creation_dossier
+        #On confirme sa création
+        Write-Host "Le dossier $choix_nom_creation_dossier a bien été crée dans $PWD. Félicitations."
+        Start-Sleep -Seconds 1
+        Write-Host "Retour au menu précédent..."
+        Start-Sleep -Seconds 1
+        Menu_actions_ordinateur_client
+    }
+    Else
+    {
+        Write-Host "Le dossier $choix_nom_creation_dossier existe déjà."
+        #Retour au menu précédent
+        Write-Host "Retour au menu précédent..."
+        Start-Sleep -Seconds 2
+        Menu_actions_ordinateur_client
+    }
 }
 
 
