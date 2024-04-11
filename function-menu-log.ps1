@@ -155,13 +155,16 @@ function menuLogMenu {
             }
         }
         "M" {
+            # Redirection vers Menu Principal
             menuMainMenu
         }
         "x" {
+            # Fin de prise de Logs + Sortie Script
             endLogTask
             exit
         }
         Default {
+            # Choix indisponible >> Retour au Menu
             notAvailable
             menuLogMenu
         }
