@@ -129,9 +129,9 @@ function menuLogMenu {
             }
         }
         "U" {
-            # Reaquête du nom d'Utilisateur à rechercher
+            # Requête du nom d'Utilisateur à rechercher
             $userTarget = Read-Host "`nPour quel Utilisateur souhaitez-vous consulter les Logs ?"
-            # Deamande de confirmation de l'Utilisateur
+            # Demande de confirmation de l'Utilisateur
             $userValidate = Read-Host "`nConfirmez-vous vouloir faire une recherche pour l'Utilisateur $userTarget ? (O/n)"
             if ($userValidate -eq "O") {
                 # Si OK >> Continue
@@ -168,26 +168,32 @@ function menuLogMenu {
     }
 }
 
+# Erreur de choix
 function notAvailable {
     Write-Host "`nErreur : Ce choix n'est pas disponible - Retour au MENU $currentMenu`n" -ForegroundColor Yellow
 }
 
+# Erreur de confirmation
 function notConfirmed {
     Write-Host "`nErreur : Vous n'avez pas confirmé votre choix - Retour au MENU $currentMenu`n" -ForegroundColor Yellow
 }
 
+# Début de prise de Logs
 function beginLogTask {
     Add-Content -Path C:\Windows\System32\LogFiles\log_evt.log -Value "$(Get-Date -Format yyyyMMdd)-$(Get-Date -Format HHmmss)-$env:USERNAME-********StartScript********"
 }
 
+# Fin de prise de Logs
 function endLogTask {
     Add-Content -Path C:\Windows\System32\LogFiles\log_evt.log -Value "$(Get-Date -Format yyyyMMdd)-$(Get-Date -Format HHmmss)-$env:USERNAME-*********EndScript*********"
 }
 
+# Evènements pour la prise de Logs
 function eventLogTask {
     Add-Content -Path C:\Windows\System32\LogFiles\log_evt.log -Value "$(Get-Date -Format yyyyMMdd)-$(Get-Date -Format HHmmss)-$env:USERNAME-$eventLog"
 }
 
+# Informations pour la prise de Logs
 function infoLogTask {
     Add-Content -Path C:\Users\Administrator\Documents\info_$eventTarget`_$(Get-Date -Format yyyyMMdd).txt -Value "$(Get-Date -Format yyyyMMdd)-$(Get-Date -Format HHmmss)-$env:USERNAME-$eventLog"
     Add-Content -Path C:\Users\Administrator\Documents\info_$eventTarget`_$(Get-Date -Format yyyyMMdd).txt -Value "$infoLogPreview"
