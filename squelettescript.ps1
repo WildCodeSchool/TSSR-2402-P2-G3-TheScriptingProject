@@ -835,7 +835,42 @@ function Suppression_de_repertoire()
 
 function Modification_de_repertoire()
 {
-
+    #On demande à l'utilisateur ce qu'il souhaite faire : renommer un dossier existant ou revenir au menu précédent
+    $choix_sous_menu_modification_dossier = Read-Host "Veuillez choisir :`n - Renommer un dossier (1)`n - Revenir au menu précédent (x)`n"
+    #On pose un SWITCH, 1 on rename, x on revient au menu précédent, commande invalide on reprend
+    Switch ($choix_sous_menu_modification_dossier)
+    {
+        "1" {
+                #On demande le nom du dossier qu'il souhaite rename
+                $choix_modification_dossier = Read-Host "Veuillez indiquer le nom du dossier que vous souhaitez renommer"
+                #On vérifie son existence
+                #On pose la condition SI, soit il existe et on go, soit non et on revient au sous_menu 'Modification_de_repertoire'
+                If (Test-Path $choix_modification_dossier)
+                {
+                    $choix_nouveau_nom_modification_dossier = Read-Host "Indiquez le nouveau nom"
+                    Rename-Item -Path $choix_modification_dossier -NewName $choix_nouveau_nom_modification_dossier
+                    Start-Sleep -Seconds 1
+                    Write-Host "Opération réalisée avec succès. Félicitations."
+                    Start-Sleep -Seconds 1
+                    Write-Host "Retour au menu précédent..."
+                    Start-Sleep -Seconds 1
+                    Menu_actions_ordinateur_client
+                }
+                Else
+                {
+                    Write-Host "Le dossier $choix_modification_dossier n'existe pas et ne peut donc être modifié !"
+                    Write-Host "Retour au menu précédent..."
+                    Start-Sleep -Seconds 2
+                    Modification_de_repertoire
+                }
+            }
+        "x" {
+                Menu_actions_ordinateur_client
+            }
+        default {
+                    Write-Host "Commande invalide. Veuillez ressaisir"
+                }
+    }
 
 }
 
