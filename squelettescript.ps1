@@ -53,8 +53,8 @@ function fonction_menu_action_utilisateur {
     }
 }
 
-# Création d'utilisateur 
-Invoke-Command -ComputerName 172.16.10.20 -ScriptBlock { function Creation_compte_utilisateur_local {
+# Creation d'utilisateur 
+function Creation_compte_utilisateur_local {
     $answer = Read-Host "Voulez-vous creer un nouveau compte utilisateur local ? (o/n)"
     if ($answer -eq "o") {
         $createUser = Read-Host "Rentrez le nom de l'utilisateur a creer"
@@ -64,79 +64,73 @@ Invoke-Command -ComputerName 172.16.10.20 -ScriptBlock { function Creation_compt
         }
         # Si non création de l'utilisateur
         else {
-            New-LocalUser $createUser 
-            Write-Host "Le compte $createUser a ete cree avec succes."
+            Invoke-Command -ScriptBlock { New-LocalUser $createUser 
+            Write-Host "Le compte $createUser a ete cree avec succes."}
         }
     }
     else {
-        if ($answer -eq "n") {
             Write-Host "Operation annulee."
+            fonction_menu_action_utilisateur
         }
-    }
 }
-Creation_compte_utilisateur_local } -Credential wilder
 
 
 # Suppresion d'utilisateur 
-Invoke-Command -ComputerName 172.16.10.20 -ScriptBlock { function Suppression_de_compte {
+function Suppression_de_compte {
     $answer = Read-Host "Voulez-vous supprimer un compte utilisateur local ? (o/n)"
     if ($answer -eq "o") {
         $delUser = Read-Host "Rentrez le nom de l'utilisateur a supprimer"
         # Vérification que l'utilisateur existe
-        if (Get-LocalUser -Name $delUser -ErrorAction SilentlyContinue) {
+        if (Get-LocalUser -Name $delUser) {
             # Si oui suppression de l'utilisateur
-            Remove-LocalUser $delUser 
-            Write-Host "Le compte $delUser a ete supprime avec succes."
+            Invoke-Command -ScriptBlock { Remove-LocalUser $delUser 
+            Write-Host "Le compte $delUser a ete supprime avec succes."}
         }
     }
     else {
-        if ($answer -eq "n") {
             Write-Host "Operation annulee."
+            fonction_menu_action_utilisateur
+        }
     }
-}
-}
-Suppression_de_compte } -Credential wilder
 
 # Changement de mdp
-Invoke-Command -ComputerName 172.16.10.20 -ScriptBlock { function Changement_de_mot_de_passe {
-    $answer = Read-Host "Voulez-vous modifier le mot de passer d'un compte utilisateur local ? (o/n)"
+function Changement_de_mot_de_passe {
+    $answer = Read-Host "Voulez-vous modifier le mot de passe d'un compte utilisateur local ? (o/n)"
     if ($answer -eq "o") {
         $modUser = Read-Host "Rentrez le nom de l'utilisateur"
         # Vérification que l'utilisateur existe
-        if (Get-LocalUser -Name $modUser -ErrorAction SilentlyContinue) {
+        if (Get-LocalUser -Name $modUser) {
             # Si oui changement de mot de passe de l'utilisateur
-            Set-LocalUser -Name $modUser -Password (ConvertTo-SecureString -AsPlainText -Force) 
-            Write-Host "Le mot de passe de $modUser a ete modifie avec succes."
-        }
+            Invoke-Command -ScriptBlock { Set-LocalUser -Name $modUser -Password (ConvertTo-SecureString -AsPlainText -Force) 
+            Write-Host "Le mot de passe de $modUser a ete modifie avec succes."}
     }
     else {
-        if ($answer -eq "n") {
             Write-Host "Operation annulee."
-    }
+            fonction_menu_action_utilisateur
+        }
 }
 }
-Changement_de_mot_de_passe } -Credential wilder
 
 # Desactivation d'un compte
-Invoke-Command -ComputerName 172.16.10.20 -ScriptBlock { function Desactivation_compte_utilisateur {
+function Desactivation_compte_utilisteur {
     $answer = Read-Host "Voulez-vous désactiver un compte utilisateur local ? (o/n)"
     if ($answer -eq "o") {
         $deacUser = Read-Host "Rentrez le nom de l'utilisateur"
         # Vérification que l'utilisateur existe
         if (Get-LocalUser -Name $deacUser -ErrorAction SilentlyContinue) {
             # Si oui suppression de l'utilisateur
-            Disable-LocalUser toto -Confirm
-            Write-Host "Le compte $deacUser a ete supprime avec succes."
+            Invoke-Command -ScriptBlock { Disable-LocalUser $deacUser -Confirm
+            Write-Host "Le compte $deacUser a ete supprime avec succes."}
         }
     }
     else {
-        Write-Host "Retour au menu precedent."
-    }
+            Write-Host "Operation annulee."
+            fonction_menu_action_utilisateur
+        }
 }
-Desactivation_compte_utilisateur } -Credential wilder
 
 # Ajout d'un utilisateur à un groupe local
-Invoke-Command -ComputerName 172.16.10.20 -ScriptBlock { function Ajout_utilisateur_a_groupe {
+function Ajout_utilisateur_a_groupe {
     $answer = Read-Host "Voulez-vous ajouter un utilisateur local à un groupe ? (o/n)"
     if ($answer -eq "o") {
         $user = Read-Host "Rentrez le nom de l'utilisateur"
@@ -144,20 +138,18 @@ Invoke-Command -ComputerName 172.16.10.20 -ScriptBlock { function Ajout_utilisat
         # Vérification que l'utilisateur existe
         if (Get-LocalUser -Name $user -ErrorAction SilentlyContinue) {
             # Si oui suppression de l'utilisateur
-            Add-LocalGroupMember $addGroup -Member $user -Confirm
-            Write-Host "L'utilsateur $user a ete ajoute au groupe $addGroup avec succes."
+            Invoke-Command -ScriptB1lock { Add-LocalGroupMember $addGroup -Member $user -Confirm
+            Write-Host "L'utilsateur $user a ete ajoute au groupe $addGroup avec succes."}
         }
     }
     else {
-        if ($answer -eq "n") {
             Write-Host "Operation annulee."
-            }
-    }
+            fonction_menu_action_utilisateur
+        }
 }
-Ajout_utilisateur_a_groupe } -Credential wilder
 
 # Suppression d'un utilisateur d'un groupe local
-Invoke-Command -ComputerName 172.16.10.20 -ScriptBlock { function Supp_user_from_group {
+function Supp_user_from_group {
     $answer = Read-Host "Voulez-vous retirer un utilisateur local à un groupe ? (o/n)"
     if ($answer -eq "o") {
         $user = Read-Host "Rentrez le nom de l'utilisateur"
@@ -165,17 +157,15 @@ Invoke-Command -ComputerName 172.16.10.20 -ScriptBlock { function Supp_user_from
         # Vérification que l'utilisateur existe
         if (Get-LocalUser -Name $user -ErrorAction SilentlyContinue) {
             # Si oui suppression de l'utilisateur
-            Remove-LocalGroupMember $delGroup -Member $user -Confirm
-            Write-Host "L'utilsateur $user a ete retire au groupe $delGroup avec succes."
+            Invoke-Command -ScriptBlock { Remove-LocalGroupMember $delGroup -Member $user -Confirm
+            Write-Host "L'utilsateur $user a ete retire au groupe $delGroup avec succes."}
         }
     }
     else {
-        if ($answer -eq "n") {
             Write-Host "Operation annulee."
-            }
-    }
+            fonction_menu_action_utilisateur
+        }
 }
-Supp_user_from_group } -Credential wilder
 
 #Menu info ordinateur
 function fonction_menu_info_ordinateur_client {
