@@ -506,11 +506,12 @@ function Verrouillage()
 
 
 #Fonction Mise à jour système
+#Penser à Enter-PSSession -ComputerName <ip> -Credential <nomuser> 
 
 function Mise_a_jour_systeme()
 {
     #On demande à l'utilisateur s'il souhaite procéder aux maj
-    $choix_mises_a_jour_systeme = Read-Host "Êtes-vous sur(e) de vouloir procéder aux mises à jour du système ? (o/n) "
+    $choix_mises_a_jour_systeme = Read-Host "Êtes-vous sur(e) de vouloir procéder aux mises à jour du système ? Nous allons procéder à leur recherche (o/n) "
     #On pose la condition If, soit oui et go, soit non et retour menu précédent
     If ( $choix_mises_a_jour_systeme -eq "o" )
     {
@@ -529,17 +530,31 @@ function Mise_a_jour_systeme()
                 {
                     # Installe les mises à jour
                     Install-WindowsUpdate -AcceptAll
+                    #on ajoute une confirmation si tout s'est bien passé
+                    $installation_reussie = Install-WindowsUpdate -AcceptAll
+                    If ($installation_reussie.Success)
+                    {
+                        Write-Host "L'installation des mises à jour s'est bien déroulée. Félicitations."
+                        Menu_actions_ordinateur_client
+                    }
+                    Else
+                    {
+                        Write-Host "Une erreur s'est produite, c'est la catastrophe !"
+                        Menu_actions_ordinateur_client
+                    }
                 } 
                 Else 
                 {
                     Write-Host "Les mises à jour ne seront pas installées."
                     Start-Sleep -Seconds 1
+                    Menu_actions_ordinateur_client
                 }
         }
         Else
         {
             Write-Host "Aucune mise à jour disponible."
             Start-Sleep -Seconds 1
+            Menu_actions_ordinateur_client
         }
     }
     Else
