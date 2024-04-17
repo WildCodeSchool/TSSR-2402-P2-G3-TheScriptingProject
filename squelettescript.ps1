@@ -53,7 +53,7 @@ function fonction_menu_action_utilisateur {
     }
 }
 
-# Creation d'utilisateur 
+# Création d'utilisateur 
 function Creation_compte_utilisateur_local {
     $answer = Read-Host "Voulez-vous creer un nouveau compte utilisateur local ? (o/n)"
     if ($answer -eq "o") {
@@ -64,14 +64,22 @@ function Creation_compte_utilisateur_local {
         }
         # Si non création de l'utilisateur
         else {
-            Invoke-Command -ScriptBlock { New-LocalUser $createUser 
-            Write-Host "Le compte $createUser a ete cree avec succes."}
+            try {
+                Invoke-Command -ComputerName $ipAddress -ScriptBlock {
+                    param($createUser)
+                    New-LocalUser -Name $createUser 
+                    Write-Host "Le compte $createUser a ete cree avec succes." 
+            } -ArgumentList $createUser -ErrorAction Stop
+        }
+            catch {
+                Write-Host "Erreur lors de la création de l'utilisateur : $_"
+            }
         }
     }
     else {
-            Write-Host "Operation annulee."
-            fonction_menu_action_utilisateur
-        }
+        Write-Host "Opération annulée."
+    }
+    fonction_menu_action_utilisateur
 }
 
 
@@ -81,17 +89,28 @@ function Suppression_de_compte {
     if ($answer -eq "o") {
         $delUser = Read-Host "Rentrez le nom de l'utilisateur a supprimer"
         # Vérification que l'utilisateur existe
-        if (Get-LocalUser -Name $delUser) {
-            # Si oui suppression de l'utilisateur
-            Invoke-Command -ScriptBlock { Remove-LocalUser $delUser 
-            Write-Host "Le compte $delUser a ete supprime avec succes."}
+        if (Get-LocalUser -Name $delUser -ErrorAction SilentlyContinue) {
+            Write-Host "L'utilisateur $delUser existe deja."
+        }
+        # Si non création de l'utilisateur
+        else {
+            try {
+                Invoke-Command -ComputerName $ipAddress -ScriptBlock {
+                    param($delUser)
+                    Remove-LocalUser -Name $delUser 
+                    Write-Host "Le compte $delUser a ete supprimé avec succes." 
+            } -ArgumentList $delUser -ErrorAction Stop
+        }
+            catch {
+                Write-Host "Erreur lors de la suppresion de l'utilisateur : $_"
+            }
         }
     }
     else {
-            Write-Host "Operation annulee."
-            fonction_menu_action_utilisateur
-        }
+        Write-Host "Opération annulée."
     }
+    fonction_menu_action_utilisateur
+}
 
 # Changement de mdp
 function Changement_de_mot_de_passe {
@@ -99,16 +118,27 @@ function Changement_de_mot_de_passe {
     if ($answer -eq "o") {
         $modUser = Read-Host "Rentrez le nom de l'utilisateur"
         # Vérification que l'utilisateur existe
-        if (Get-LocalUser -Name $modUser) {
-            # Si oui changement de mot de passe de l'utilisateur
-            Invoke-Command -ScriptBlock { Set-LocalUser -Name $modUser -Password (ConvertTo-SecureString -AsPlainText -Force) 
-            Write-Host "Le mot de passe de $modUser a ete modifie avec succes."}
+        if (-not (Get-LocalUser -Name $modUser -ErrorAction SilentlyContinue)) {
+            Write-Host "L'utilisateur $modUser n'existe pas."
+        }
+        # Si non création de l'utilisateur
+        else {
+            try {
+                Invoke-Command -ComputerName $ipAddress -ScriptBlock {
+                    param($modUser)
+                    Set-LocalUser -Name $modUser -Password (ConvertTo-SecureString -AsPlainText -Force) 
+                    Write-Host "Le mot de passe de $modUser a ete modifie avec succes."
+            } -ArgumentList $modUser -ErrorAction Stop
+        }
+            catch {
+                Write-Host "Erreur lors de la modification du mot de passe de $_"
+            }
+        }
     }
     else {
-            Write-Host "Operation annulee."
-            fonction_menu_action_utilisateur
-        }
-}
+        Write-Host "Opération annulée."
+    }
+    fonction_menu_action_utilisateur
 }
 
 # Desactivation d'un compte
@@ -117,16 +147,27 @@ function Desactivation_compte_utilisteur {
     if ($answer -eq "o") {
         $deacUser = Read-Host "Rentrez le nom de l'utilisateur"
         # Vérification que l'utilisateur existe
-        if (Get-LocalUser -Name $deacUser -ErrorAction SilentlyContinue) {
-            # Si oui suppression de l'utilisateur
-            Invoke-Command -ScriptBlock { Disable-LocalUser $deacUser -Confirm
-            Write-Host "Le compte $deacUser a ete supprime avec succes."}
+        if (-not (Get-LocalUser -Name $deacUser -ErrorAction SilentlyContinue)) {
+            Write-Host "L'utilisateur $deacUser n'existe pas."
+        }
+        # Si non création de l'utilisateur
+        else {
+            try {
+                Invoke-Command -ComputerName $ipAddress -ScriptBlock {
+                    param($deacUser)
+                    Disable-LocalUser $deacUser -Confirm
+                    Write-Host "Le compte $deacUser a ete désactivé avec succes."
+            } -ArgumentList $deacUser -ErrorAction Stop
+        }
+            catch {
+                Write-Host "Erreur lors de la désactivation du compte $_"
+            }
         }
     }
     else {
-            Write-Host "Operation annulee."
-            fonction_menu_action_utilisateur
-        }
+        Write-Host "Opération annulée."
+    }
+    fonction_menu_action_utilisateur
 }
 
 # Ajout d'un utilisateur à un groupe local
@@ -134,37 +175,59 @@ function Ajout_utilisateur_a_groupe {
     $answer = Read-Host "Voulez-vous ajouter un utilisateur local à un groupe ? (o/n)"
     if ($answer -eq "o") {
         $user = Read-Host "Rentrez le nom de l'utilisateur"
-        $addGroup = Read-Host "Rentrer le nom du groupe"
+        $addGroup = Read-Host "Rentrez le nom du groupe"
         # Vérification que l'utilisateur existe
         if (Get-LocalUser -Name $user -ErrorAction SilentlyContinue) {
-            # Si oui suppression de l'utilisateur
-            Invoke-Command -ScriptB1lock { Add-LocalGroupMember $addGroup -Member $user -Confirm
-            Write-Host "L'utilsateur $user a ete ajoute au groupe $addGroup avec succes."}
+            Write-Host "L'utilisateur $user n'existe pas."
+        }
+        # Si oui ajout de l'utilisateur au groupe
+        else {
+            try {
+                Invoke-Command -ComputerName $ipAddress -ScriptBlock {
+                    param($addGroup, $user)
+                    Add-LocalGroupMember -Group $using:addGroup -Member $using:user -Confirm
+                    Write-Host "L'utilsateur a ete ajoute au groupe $addGroup avec succes."
+            } -ArgumentList $addGroup -ErrorAction Stop
+        }
+            catch {
+                Write-Host "Erreur lors de l'ajout de l'utilisateur au groupe"
+            }
         }
     }
     else {
-            Write-Host "Operation annulee."
-            fonction_menu_action_utilisateur
-        }
+        Write-Host "Opération annulée."
+    }
+    fonction_menu_action_utilisateur
 }
 
 # Suppression d'un utilisateur d'un groupe local
 function Supp_user_from_group {
-    $answer = Read-Host "Voulez-vous retirer un utilisateur local à un groupe ? (o/n)"
+    $answer = Read-Host "Voulez-vous retirer un utilisateur local d'un groupe ? (o/n)"
     if ($answer -eq "o") {
         $user = Read-Host "Rentrez le nom de l'utilisateur"
         $delGroup = Read-Host "Rentrer le nom du groupe"
         # Vérification que l'utilisateur existe
         if (Get-LocalUser -Name $user -ErrorAction SilentlyContinue) {
-            # Si oui suppression de l'utilisateur
-            Invoke-Command -ScriptBlock { Remove-LocalGroupMember $delGroup -Member $user -Confirm
-            Write-Host "L'utilsateur $user a ete retire au groupe $delGroup avec succes."}
+            Write-Host "L'utilisateur $user n'existe pas."
+        }
+        # Si oui ajout de l'utilisateur au groupe
+        else {
+            try {
+                Invoke-Command -ComputerName $ipAddress -ScriptBlock {
+                    param($delGroup, $user)
+                    Remove-LocalGroupMember -Group $using:delGroup -Member $using:user -Confirm
+                    Write-Host "L'utilsateur a ete supprime du groupe $delGroup avec succes."
+            } -ArgumentList $delGroup -ErrorAction Stop
+        }
+            catch {
+                Write-Host "Erreur lors de l'ajout de l'utilisateur au groupe"
+            }
         }
     }
     else {
-            Write-Host "Operation annulee."
-            fonction_menu_action_utilisateur
-        }
+        Write-Host "Opération annulée."
+    }
+    fonction_menu_action_utilisateur
 }
 
 #Menu info ordinateur
