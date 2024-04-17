@@ -200,7 +200,7 @@ function menu-action-user() {
             if [ $userValidate = "O" ]; then
                 # Si OK >> Continue
                 # Vérification si le compte existe déjà
-                if $sshCommand cat /etc/passwd | grep $userName; then
+                if $sshCommand cat /etc/passwd | grep $userName > /dev/null; then
                     # le compte existe >> Retour au menu
                     echo -e "\n\e[33mErreur : Utilisateur $userName existe déjà - Retour au MENU ACTION UTILISATEUR\e[0m\n"
                     menu-action-user
@@ -209,7 +209,7 @@ function menu-action-user() {
                     dataCommand="sudo -S adduser $userName"
                     $sshCommand $dataCommand
                     #verification création du compte
-                    if $sshCommand cat /etc/passwd | grep $userName; then
+                    if $sshCommand cat /etc/passwd | grep $userName > /dev/null; then
                         #le compte $userName existe donc compte existant OK
                         echo -e "\n\e[94mUtilisateur $userName créé avec succés\e[0m\n"
                         eventLog="Création du compte $userName sur $clientName"
@@ -245,10 +245,10 @@ function menu-action-user() {
             if [ $userValidate = "O" ]; then
                 #Si OK >> Continue
                 # Vérification si le compte existe
-                if $sshCommand cat /etc/passwd | grep $userName >/dev/null; then
+                if $sshCommand cat /etc/passwd | grep $userName > /dev/null; then
                     # si OK >> Continue
                     dataCommand="sudo -S passwd $userName"
-                    $sshCommand $dataCommand
+                    $sshCommand $dataCommand > /dev/null
                     echo -e "\n\e[94mLe mot de passe de $userName a été modifié avec succés\e[0m\n"
                     eventLog="Modification Mot de Passe de $userName sur $clientName"
                     log-event-server
@@ -282,11 +282,11 @@ function menu-action-user() {
             if [ $userValidate = "O" ]; then
                 # Si OK >> Continue
                 # Vérification si le compte existe déjà
-                if $sshCommand cat /etc/passwd | grep $userName >/dev/null; then
+                if $sshCommand cat /etc/passwd | grep $userName > /dev/null; then
                     # Si le compte existe
                     dataCommand="sudo -S userdel -r -f $userName"
-                    $sshCommand $dataCommand >/dev/null
-                    if cat /etc/passwd | grep $userName; then
+                    $sshCommand $dataCommand > /dev/null
+                    if cat /etc/passwd | grep $userName > /dev/null; then
                         # Si le compte existe toujours
                         echo -e "\n\e[33mErreur : Utilisateur $userName existe toujours - Retour au MENU ACTION UTILISATEUR\e[0m\n"
                         menu-action-user
@@ -326,10 +326,10 @@ function menu-action-user() {
             if [ $userValidate = "O" ]; then
                 # Si OK >> Continue
                 # Vérification si le compte existe déjà
-                if $sshCommand cat /etc/passwd | grep $userName >/dev/null; then
+                if $sshCommand cat /etc/passwd | grep $userName > /dev/null; then
                     # Si le compte existe
                     dataCommand="sudo usermod -L -e 1 $userName"
-                    $sshCommand $dataCommand >/dev/null
+                    $sshCommand $dataCommand > /dev/null
                     echo -e "\n\e[94mLe compte $userName a été désactivé avec succés\e[0m\n"
                     eventLog="Désactivation du compte $userName sur $clientName"
                     log-event-server
@@ -363,14 +363,14 @@ function menu-action-user() {
             if [ $userValidate = "O" ]; then
                 # Si OK >> Continue
                 # Vérification si le compte existe déjà
-                if $sshCommand cat /etc/passwd | grep $userName >/dev/null; then
+                if $sshCommand cat /etc/passwd | grep $userName > /dev/null; then
                     # Si le compte existe
                     read -p "A quel groupe voulez vous ajouter $userName ? " groupName
                     # Vérification si le groupe existe
-                    if $sshCommand cat /etc/passwd | grep $groupName >/dev/null; then
+                    if $sshCommand cat /etc/passwd | grep $groupName > /dev/null; then
                         # Si OK >> Continue
                         dataCommand="sudo -S usermod -G $groupName $userName"
-                        $sshCommand $dataCommand >/dev/null
+                        $sshCommand $dataCommand > /dev/null
                         echo -e "\n\e[94mL'Utilisateur $userName a été ajouté au groupe $groupName\e[0m\n"
                         eventLog="Ajout de $userName au groupe $groupName sur $clientName"
                         log-event-server
@@ -409,14 +409,14 @@ function menu-action-user() {
             if [ $userValidate = "O" ]; then
                 # Si OK >> Continue
                 # Vérification si le compte existe déjà
-                if $sshCommand cat /etc/passwd | grep $userName >/dev/null; then
+                if $sshCommand cat /etc/passwd | grep $userName > /dev/null; then
                     # Si le compte existe
                     read -p "A quel groupe voulez vous supprimer $userName ? " groupName
                     # Vérification si le groupe existe
-                    if $sshCommand cat /etc/passwd | grep $groupName >/dev/null; then
+                    if $sshCommand cat /etc/passwd | grep $groupName > /dev/null; then
                         # Si OK >> Continue
                         dataCommand="sudo -S gpasswd -d $userName $groupName"
-                        $sshCommand $dataCommand >/dev/null
+                        $sshCommand $dataCommand > /dev/null
                         echo -e "\n\e[94mL'Utilisateur $userName a été supprimé du groupe $groupName\e[0m\n"
                         eventLog="Suppression de $userName du groupe $groupName sur $clientName"
                         log-event-server
@@ -486,7 +486,7 @@ function menu-action-client() {
         if [ $optionValidate = "O" ]; then
             # Si OK >> Continue
             dataCommand="sudo -S shutdown -h now"
-            $sshCommand $dataCommand >/dev/null
+            $sshCommand $dataCommand > /dev/null
             echo -e "\n\e[94mLe Client $clientName est en cours d'arrêt\e[0m\n"
             # Verrouillage de la cible pour les Logs
             targetLog="$clientName"
@@ -505,7 +505,7 @@ function menu-action-client() {
         if [ $optionValidate = "O" ]; then
             # Si OK >> Continue
             dataCommand="sudo -S reboot -h now"
-            $sshCommand $dataCommand >/dev/null
+            $sshCommand $dataCommand > /dev/null
             echo -e "\n\e[94mLe Client $clientName est en cours de redémarrage\e[0m\n"
             # Verrouillage de la cible pour les Logs
             targetLog="$clientName"
@@ -520,7 +520,7 @@ function menu-action-client() {
         if [ $optionValidate = "O" ]; then
             # Si OK >> Continue
             dataCommand="skill -KILL -u wilder"
-            $sshCommand $dataCommand >/dev/null
+            $sshCommand $dataCommand > /dev/null
             echo -e "\n\e[94mLe Client $clientName est en cours de verrouillage\e[0m\n"
             # Verrouillage de la cible pour les Logs
             targetLog="$clientName"
@@ -539,7 +539,7 @@ function menu-action-client() {
         if [ $optionValidate = "O" ]; then
             # Si OK >> Continue
             dataCommand="sudo -S apt update && sudo -S apt upgrade -y"
-            $sshCommand $dataCommand >/dev/null
+            $sshCommand $dataCommand > /dev/null
             echo -e "\n\e[94mLe Client $clientName a été mis à jour\e[0m\n"
             # Verrouillage de la cible pour les Logs
             targetLog="$clientName"
@@ -559,13 +559,13 @@ function menu-action-client() {
             # Si OK >> Continue
             echo ""
             read -p "Veuillez indiquer le nom du dossier à créer : " repoName
-            if $sshCommand test -d $repoName; then
+            if $sshCommand test -d $repoName > /dev/null; then
                 #nom existant donc erreur
                 echo "\n\e[33mErreur : Le répertoire $repoName existe déjà - Retour au MENU ACTION CLIENT\e[0m\n"
                 menu-action-client
             else
                 dataCommand="mkdir $repoName"
-                $sshCommand $dataCommand
+                $sshCommand $dataCommand > /dev/null
                 echo -e "\n\e[94mLe répertoire $repoName a été créé avec succès.\e[0m\n"
                 # Verrouillage de la cible pour les Logs
                 targetLog="$clientName"
@@ -586,11 +586,11 @@ function menu-action-client() {
             # Si OK >> Continue
             read -p "Quel dossier voulez-vous renommer ? " repoName
             echo ""
-            if $sshCommand test -d $repoName; then
+            if $sshCommand test -d $repoName > /dev/null; then
                 read -p "Entrez un nouveau nom pour le dossier $repoName : " repoNewName
                 echo ""
                 dataCommand="mv $repoName $repoNewName"
-                $sshCommand $dataCommand
+                $sshCommand $dataCommand > /dev/null
                 echo -e "\n\e[94mLe répertoire $repoName a été renommé avec succès en $repoNewName.\e[0m\n"
                 # Verrouillage de la cible pour les Logs
                 targetLog="$clientName"
@@ -614,9 +614,9 @@ function menu-action-client() {
             # Si OK >> Continue
             echo ""
             read -p "Quel dossier voulez-vous supprimer ? " repoName
-            if $sshCommand test -d $repoName; then
+            if $sshCommand test -d $repoName > /dev/null; then
                 dataCommand="rm -r $repoName"
-                $sshCommand $dataCommand >/dev/null
+                $sshCommand $dataCommand > /dev/null
                 echo -e "\n\e[94mLe répertoire $repoName a été supprimé avec succès.\e[0m\n"
                 # Verrouillage de la cible pour les Logs
                 targetLog="$clientName"
@@ -639,7 +639,7 @@ function menu-action-client() {
         if [ $optionValidate = "O" ]; then
             # Si OK >> Continue
             dataCommand="-p 22"
-            $sshCommand $dataCommand
+            $sshCommand $dataCommand > /dev/null
             echo -e "\n\e[94mVous avez pris la main en CLI sur le Client $clientName\e[0m\n"
             # Verrouillage de la cible pour les Logs
             targetLog="$clientName"
@@ -658,7 +658,7 @@ function menu-action-client() {
         if [ $optionValidate = "O" ]; then
             # Si OK >> Continue
             dataCommand="sudo -S ufw enable"
-            $sshCommand $dataCommand
+            $sshCommand $dataCommand > /dev/null
             echo -e "\n\e[94mLe Pare-feu de $clientName a été activé\e[0m\n"
             # Verrouillage de la cible pour les Logs
             targetLog="$clientName"
@@ -677,7 +677,7 @@ function menu-action-client() {
         if [ $optionValidate = "O" ]; then
             # Si OK >> Continue
             dataCommand="sudo -S iptables -L"
-            $sshCommand $dataCommand >/dev/null
+            $sshCommand $dataCommand > /dev/null
             echo -e "\n\e[94mLes règles du Pare-feu de $clientName ont été définies\e[0m\n"
             # Verrouillage de la cible pour les Logs
             targetLog="$clientName"
@@ -696,7 +696,7 @@ function menu-action-client() {
         if [ $optionValidate = "O" ]; then
             # Si OK >> Continue
             dataCommand="sudo -S ufw disable"
-            $sshCommand $dataCommand >/dev/null
+            $sshCommand $dataCommand > /dev/null
             echo -e "\n\e[94mLe Pare-feu de $clientName a été désactivé\e[0m\n"
             # Verrouillage de la cible pour les Logs
             targetLog="$clientName"
@@ -716,7 +716,7 @@ function menu-action-client() {
             # Si OK >> Continue
             read -p "Quel logiciel voulez-vous installer ? " softwareName
             dataCommand="sudo -S apt install $softwareName"
-            $sshCommand $dataCommand
+            $sshCommand $dataCommand > /dev/null
             echo -e "\n\e[94mLe logiciel $softwareName a été installé avec succès\e[0m\n"
             # Verrouillage de la cible pour les Logs
             targetLog="$clientName"
@@ -736,7 +736,7 @@ function menu-action-client() {
             # Si OK >> Continue
             read -p "Quel logiciel voulez-vous désinstaller ? " softwareName
             dataCommand="sudo -S apt remove --purge $softwareName"
-            $sshCommand $dataCommand
+            $sshCommand $dataCommand > /dev/null
             echo -e "\n\e[94mLe logiciel $softwareName a été désinstallé avec succès\e[0m\n"
             # Verrouillage de la cible pour les Logs
             targetLog="$clientName"
@@ -757,7 +757,7 @@ function menu-action-client() {
             echo -e "Voici la liste des scripts exécutables :\n - hello"
             scriptName="hello"
             dataCommand="bash hello.sh"
-            $sshCommand $dataCommand
+            $sshCommand $dataCommand > /dev/null
             echo -e "\n\e[94mLe script $scriptName a été exécuté sur $clientName\e[0m\n"
             # Verrouillage de la cible pour les Logs
             targetLog="$clientName"
@@ -812,6 +812,7 @@ function menu-info-user() {
         read -p "Confirmez-vous ce choix ? (O/n) " optionValidate
         if [ $optionValidate = "O" ]; then
             # Si OK >> Continue
+            echo ""
             read -p "Pour quel Utilisateur souhaitez-vous connaitre la date de dernière connexion ? " userName
             # Verrouillage de la cible pour les Logs
             # Verrouillage de la commande pour les Logs
@@ -819,6 +820,7 @@ function menu-info-user() {
             dataCommand="last $userName"
             echo -e "\n\e[94mDate de dernière connexion de $userName sur $clientName : \e[0m\n"
             $sshCommand $dataCommand
+            echo ""
             eventLog="Date dernière connexion de $userName sur $clientName"
             # Prise de log + Retour au Menu en cours
             log-desktop
@@ -835,6 +837,7 @@ function menu-info-user() {
         read -p "Confirmez-vous ce choix ? (O/n) " optionValidate
         if [ $optionValidate = "O" ]; then
             # Si OK >> Continue
+            echo ""
             read -p "Pour quel Utilisateur souhaitez-vous connaître la date de dernière modification du mot de passe ? " userName
             # Verrouillage de la cible pour les Logs
             # Verrouillage de la commande pour les Logs
@@ -859,6 +862,7 @@ function menu-info-user() {
         read -p "Confirmez-vous ce choix ? (O/n) " optionValidate
         if [ $optionValidate = "O" ]; then
             # Si OK >> Continue
+            echo ""
             read -p "Pour quel Utilisateur souhaitez-vous connaitre la liste des sessions ouvertes ? " userName
             # Verrouillage de la cible pour les Logs
             # Verrouillage de la commande pour les Logs
@@ -866,6 +870,7 @@ function menu-info-user() {
             dataCommand="who -a | grep $userName"
             echo -e "\n\e[94mListes des sessions ouvertes de $userName sur $clientName : \e[0m\n"
             $sshCommand $dataCommand
+            echo ""
             eventLog="Liste des sessions ouvertes de $userName sur $clientName"
             # Prise de log + Retour au Menu en cours
             log-desktop
@@ -882,6 +887,7 @@ function menu-info-user() {
         read -p "Confirmez-vous ce choix ? (O/n) " optionValidate
         if [ $optionValidate = "O" ]; then
             # Si OK >> Continue
+            echo ""
             read -p "Pour quel Utilisateur souhaitez-vous connaitre les groupes d'appartenance ? " userName
             # Verrouillage de la cible pour les Logs
             # Verrouillage de la commande pour les Logs
@@ -889,6 +895,7 @@ function menu-info-user() {
             dataCommand="id -gn $userName"
             echo -e "\n\e[94mGroupe d'appartenance de $userName sur $clientName : \e[0m\n"
             $sshCommand $dataCommand
+            echo ""
             eventLog="Groupe appartenance de $userName sur $clientName"
             # Prise de log + Retour au Menu en cours
             log-desktop
@@ -905,6 +912,7 @@ function menu-info-user() {
         read -p "Confirmez-vous ce choix ? (O/n) " optionValidate
         if [ $optionValidate = "O" ]; then
             # Si OK >> Continue
+            echo ""
             read -p "Pour quel Utilisateur souhaitez-vous connaitre l'historiques des commandes exécutées ? " userName
             # Verrouillage de la cible pour les Logs
             # Verrouillage de la commande pour les Logs
@@ -912,6 +920,7 @@ function menu-info-user() {
             dataCommand="cat /home/$userName/.bash_history"
             echo -e "\n\e[94mHistorique des commandes exécutées de $userName sur $clientName : \e[0m\n"
             $sshCommand $dataCommand
+            echo ""
             eventLog="Historique des commandes exécutées de $userName sur $clientName"
             # Prise de log + Retour au Menu en cours
             log-desktop
@@ -928,6 +937,7 @@ function menu-info-user() {
         read -p "Confirmez-vous ce choix ? (O/n) " optionValidate
         if [ $optionValidate = "O" ]; then
             # Si OK >> Continue
+            echo ""
             read -p "Pour quel Utilisateur souhaitez-vous connaître les droits sur un dossier ? " userName
             # Verrouillage de la cible pour les Logs
             # Verrouillage de la commande pour les Logs
@@ -935,6 +945,7 @@ function menu-info-user() {
             dataCommand="ls -ld $folderName"
             echo -e "\n\e[94mDroits et Permissions sur le dossier $folderName de $userName sur $clientName : \e[0m\n"
             $sshCommand $dataCommand
+            echo ""
             eventLog="Obtention des droits permissions dossier $folderName $userName sur $clientName"
             # Prise de log + Retour au Menu en cours
             log-desktop
@@ -951,6 +962,7 @@ function menu-info-user() {
         read -p "Confirmez-vous ce choix ? (O/n) " optionValidate
         if [ $optionValidate = "O" ]; then
             # Si OK >> Continue
+            echo ""
             read -p "Pour quel Utilisateur souhaitez-vous connaître les droits sur un fichier ? " userName
             # Verrouillage de la cible pour les Logs
             # Verrouillage de la commande pour les Logs
@@ -958,6 +970,7 @@ function menu-info-user() {
             dataCommand="ls -l $fileName"
             echo -e "\n\e[94mDroits et Permissions sur le fichier $fileName de $userName sur $clientName : \e[0m\n"
             $sshCommand $dataCommand
+            echo ""
             eventLog="Obtention des droits permissions fichier $fileName $userName sur $clientName"
             # Prise de log + Retour au Menu en cours
             log-desktop
@@ -1305,7 +1318,7 @@ function menu-log-menu() {
         echo ""
         # Vérification que la confirmation est faite et que le Client apparaît dans les Logs
         if [ $clientValidate = "O" ]; then
-            if cat /var/log/log_evt.log | grep $clientName; then
+            if cat /var/log/log_evt.log | grep $clientName >> /dev/null; then
                 # Si Tout OK >> Affichage des Logs dédiés au Client + Retour au Menu en cours
                 echo -e "\n\e[94mVous recherchez les Logs pour le client $ clientName\e[0m\n"
                 cat /var/log/log_evt.log | grep $clientName
@@ -1331,7 +1344,7 @@ function menu-log-menu() {
         echo ""
         # Vérification que la confirmation est faite et que le Client apparaît dans les Logs
         if [ $clientValidate = "O" ]; then
-            if cat /var/log/log_evt.log | grep $clientName; then
+            if cat /var/log/log_evt.log | grep $clientName >> /dev/null; then
                 # Si Tout OK >> Affichage des Logs dédiés au Client + Retour au Menu en cours
                 echo -e "\n\e[94mVous recherchez les Logs pour le client $ clientName\e[0m\n"
                 cat /var/log/log_evt.log | grep $clientName
@@ -1357,7 +1370,7 @@ function menu-log-menu() {
         echo ""
         # Vérification que la confirmation est faite et que le Client apparaît dans les Logs
         if [ $clientValidate = "O" ]; then
-            if cat /var/log/log_evt.log | grep $clientName; then
+            if cat /var/log/log_evt.log | grep $clientName >> /dev/null; then
                 # Si Tout OK >> Affichage des Logs dédiés au Client + Retour au Menu en cours
                 echo -e "\n\e[94mVous recherchez les Logs pour le client $ clientName\e[0m\n"
                 cat /var/log/log_evt.log | grep $clientName
@@ -1383,7 +1396,7 @@ function menu-log-menu() {
         echo ""
         # Vérification que la confirmation est faite et que le Client apparaît dans les Logs
         if [ $clientValidate = "O" ]; then
-            if cat /var/log/log_evt.log | grep $clientName; then
+            if cat /var/log/log_evt.log | grep $clientName >> /dev/null; then
                 # Si Tout OK >> Affichage des Logs dédiés au Client + Retour au Menu en cours
                 echo -e "\n\e[94mVous recherchez les Logs pour le client $clientName\e[0m\n"
                 cat /var/log/log_evt.log | grep $clientName
@@ -1411,7 +1424,7 @@ function menu-log-menu() {
         # Vérification que la confirmation est faite et que l'Utilisateur apparaît dans les Logs
         if [ $userValidate = "O" ]; then
             # Vérification de la présence de l'Utilisateur dans les Logs
-            if cat /var/log/log_evt.log | grep $userName; then
+            if cat /var/log/log_evt.log | grep $userName >> /dev/null; then
                 # Si Tout OK >> Affichage des Logs dédiés au Client + Retour au Menu en cours
                 echo -e "\n\e[94mVous recherchez les Logs pour l'Utilisateur $userName\e[0m\n"
                 cat /var/log/log_evt.log | grep $userName
@@ -1470,11 +1483,13 @@ function log-desktop() {
         # Inscription avec ajout/création de la ligne Evènement du Script au fichier info_<Cible>-<Date>.txt  situé dans le /Documents du dossier personnel de l'utilisateur qui a initié l'évènement
         echo "$(date +%4Y%m%d)-$(date +%H%M%S)-$USER-$eventLog" >> ~/Documents/info_$targetLog\_$(date +%4Y%m%d).txt
         $sshCommand $dataCommand >>~/Documents/info_$targetLog\_$(date +%4Y%m%d).txt
+        echo -e "\nLes informations recueillies sont disponibles dans le fichier \e[94minfo_$targetLog\_$(date +%4Y%m%d).txt\e[0m situé dans le dossier ~/Documents\n"
     else
         # Création du dossier Documents dans le dossier personnel de l'utilisateur
         mkdir ~/Documents
         echo "$(date +%4Y%m%d)-$(date +%H%M%S)-$USER-$eventLog" >> ~/Documents/info_$targetLog\_$(date +%4Y%m%d).txt
         $sshCommand $dataCommand >> ~/Documents/info_$targetLog\_$(date +%4Y%m%d).txt
+        echo -e "\nLes informations recueillies sont disponibles dans le fichier \e[94minfo_$targetLog\_$(date +%4Y%m%d).txt\e[0m situé dans le dossier ~/Documents\n"
     fi
 }
 
