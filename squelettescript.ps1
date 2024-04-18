@@ -279,9 +279,7 @@ function Version_de_l_OS {
 
 function Nombre_de_disques {
     Clear-Host
-    Write-Host "Nombre de disques installés :"
-    Invoke-Command -ComputerName $ipAddress -ScriptBlock { $numberOfDisks = (Get-CimInstance -ClassName Win32_DiskDrive).Count
-        Write-Host "Nombre de disques installés : $numberOfDisks"
+    Invoke-Command -ComputerName $ipAddress -ScriptBlock { Get-Disk 
     }
     fonction_menu_info_ordinateur_client
 }
@@ -389,15 +387,15 @@ function fonction_menu_info_utilisateur {
 
 #1 Date de dernières connexion d'un utilisateur
 function Derniere_connection_utilisateur {
+    Clear-Host
     $UserName = Read-Host "Rentrez un nom d'utilisateur "
-    Invoke-Command -ComputerName $ipAddress -ScriptBlock { Get-WinEvent -LogName Security | Where-Object {$_.ID -eq 4624} | Select-Object -Property TimeCreated, @{Name='UserName';Expression={$_.Properties[5].Value}} -First 1
-    }
+    Invoke-Command -ComputerName $ipAddress -ScriptBlock { Get-LocalUser -name $using:UserName | Sort-Object LastLogon | Select-Object Name, Lastlogon -Last 1 }
 }
 #2 Date de dernière modification du mode de passe
 function Derniere_modification_mdp {
+    Clear-Host
     Read-Host "Rentrez un nom d'utilisateur "
-    Invoke-Command -ComputerName $ipAddress -ScriptBlock { Get-LocalUser | Select-Object Name, LastPasswordChangeTimestamp 
-    }
+    Invoke-Command -ComputerName $ipAddress -ScriptBlock { net user $using:UserName | Select-String "Mot de passeÿ: dernier changmt."}
 }
 
 #3 Liste des sessions ouvertes par l'utilisateur
@@ -410,13 +408,14 @@ function Liste_sessions_ouverte_par_utilisateur {
 #4 Groupe d’appartenance d’un utilisateur
 function Groupe_utilisateur {
     $UserName = Read-Host "Rentrez un nom d'utilisateur "
-    Invoke-Command -ComputerName $ipAddress -ScriptBlock { Get-LocalGroup -Member $UserName
-    }
+    Invoke-Command -ComputerName $ipAddress -ScriptBlock { net user $using:UserName | Select-String "groupes"
+ }
 }
 #5 Historique des commandes exécutées par l'utilisateur
 function Historique_utilisateur {
     $ = Read-Host "Rentrez un nom d'utilisateur "
-    
+    Invoke-Command -ComputerName $ipAddress -ScriptBlock {Get-Content -path C:\Users\wilder\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt }
+}
 }
 
 #6 Droits et permissions de l’utilisateur sur un dossier
@@ -435,8 +434,11 @@ function Droit_sur_un_dossier {
 #7 Droits/permissions de l’utilisateur sur un fichier
 function Droit_sur_un_fichier {
     $fichier = Read-Host "Saisissez le chemin du fichier"
-    Get-Acl -Path $fichier | Select-Object -ExpandProperty Access | Where-Object { $_.IdentityReference -match $UserName 
-    }
+     Invoke-Command -ComputerName $ipAddress -ScriptBlock {
+        param($fichier, $UserName)
+        Get-Acl -Path $fichier |
+        Select-Object -ExpandProperty Access | Where-Object { $_.IdentityReference -match $UserName }
+    } -ArgumentList $dossier, $UserName
 
 }
 #Menu actions ordinateur client
