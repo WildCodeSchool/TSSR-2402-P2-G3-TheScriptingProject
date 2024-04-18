@@ -33,9 +33,12 @@ La documentation jointe au Projet est constituée de 5 fichiers (dont 3 au forma
 * un script _bash_ fonctionnel
 * un script _Powershell_ fonctionnel
 
+Les deux scripts Powershell et bash, se trouve dans le dossier `attachment` du dépôt, ainsi que toutes les captures d'écran nécessaires à l'élaboration de la documentation.
+
 Un dépôt GitHub a été créé à cet effet : [TSSR-2402-P2-G3-TheScriptingProject](https://github.com/WildCodeSchool/TSSR-2402-P2-G3-TheScriptingProject)
 
 L'objectif secondaire prévoit d'administrer depuis un Serveur Windows des Clients Linux et/ou depuis un Serveur Debian des Clients Windows.
+L'équipe de projet a fait le choix de ne pas le réaliser afin de remplir toutes les cases de l'objectif principal.
 
 ## **Mise en contexte**
 
@@ -43,7 +46,7 @@ L'intérêt du Projet consiste à faciliter et rassembler les différentes tâch
 
 Des fichiers de logs sont également conservés dans le Serveur, afin d'avoir un historique complet, et ainsi une traçabilité.
 
-Ce fichiers comprennent la navigation au sein des différents menus du script, ainsi que le suivi des actions effectuées, et la centralisation des informations récoltées.
+Ces fichiers comprennent la navigation au sein des différents menus du script, ainsi que le suivi des actions effectuées, et la centralisation des informations récoltées.
 
 ## **Présentation des membres du groupe et rôles par Sprint**
 
@@ -106,29 +109,27 @@ Activités et répartitions des tâches
 ||Julien Guillot|Anthony Javault|Nicolas Maggiori|Sébastien Taiclet|
 |:-:|:-:|:-:|:-:|:-:|
 |Finalisation & Debug bash|x|x|x|x|
-|Script Powershell|x|x|x|x|
+|Fonctions Powershell|x|x|x|x|
 |Documentation||x|||
-||||||
-||||||
-||||||
-|Préparation slides présentation|||||
-|Présentation & Demo|||||
+|Préparation slides présentation|x|||x|
+|Présentation & Demo|x|x|x|x|
 
 ### **Sprint 4 : semaine du 15 au 22 avril 2024**
 
 |PO|SM|
 |:-:|:-:|
-|||
+|Julien Guillot|Anthony Javault|
 
 Activités et répartitions des tâches
 
 ||Julien Guillot|Anthony Javault|Nicolas Maggiori|Sébastien Taiclet|
 |:-:|:-:|:-:|:-:|:-:|
-||||||
-||||||
-||||||
-|Préparation slides présentation|||||
-|Présentation & Demo|||||
+|Fonctions Powershell|x|x|x|x|
+|Centralisation Powershell|x|x|x|x|
+|Debug Powershell|||||
+|Documentation||x|||
+|Préparation slides présentation||||x|
+|Présentation & Demo|x|x|x|x|
 
 ## **Choix techniques et contraintes**
 
@@ -153,8 +154,20 @@ Activités et répartitions des tâches
 
 ## **Difficultés rencontrées**
 
+Le script bash n'a pas présenté de réelles difficultés, nous avons peiné à trouver quelques commandes, mais au final il est entièrement fonctionnel.
+
+En revanche, cela a été une toute autre affaire avec de nombreuses comandes Powershell, nous pensions qu'il aurait été simple de transposer de bash vers Powershell, mais nous avons vite déchanter lorsqu'il a fallu trouver où aller chercher les informations dont nous avions besoin.
+
 ## **Solutions et/ou alternatives trouvées pour palier aux problèmes**
+
+Afin de palier aux problèmes rencontrés avec le script Powershell, nous nous sommes servis énormément de la [Documentation Officielle](https://learn.microsoft.com/fr-fr/powershell/), et avons échangé avec les autres équipes, afin de nous entraider.
 
 ## **Next-step : Améliorations possibles envisagées**
 
+La solution optimale qui pourrait être apporter un vrai plus aux deux scripts, serait une version en mode graphique pour chacun d'eux.
+
+Nous aurions, pour se faire, besoin d'outil tel que [zenity](https://doc.ubuntu-fr.org/zenity) pour le script bash, ou [WPF](https://learn.microsoft.com/fr-fr/archive/msdn-magazine/2011/july/msdn-magazine-windows-powershell-with-wpf-secrets-to-building-a-wpf-application-in-windows-powershell) pour le Powershell
+
 ## **Conclusion**
+
+L'équipe de projet est fière d'avoir réussi à accomplir l'objectif principal, les deux scripts sont fonctionnels et ergonomiques, ils respectent les pré-requis exigés par le partenaire.
