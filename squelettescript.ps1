@@ -444,6 +444,9 @@ function Droit_sur_un_fichier {
 #Menu actions ordinateur client
 #Développement de la fonction qui permettra de revenir au menu des actions sur l'ordi client
 
+#Menu actions ordinateur client
+#Développement de la fonction qui permettra de revenir au menu des actions sur l'ordi client
+
 function Menu_actions_ordinateur_client()
 {
 
@@ -485,8 +488,8 @@ function Menu_actions_ordinateur_client()
             "11" { Execution_de_script }
             "12" { Creation_de_repertoire }
             "13" { Suppression_de_repertoire }
-            "14" { Modification_de_repertoire }
-            "x" { Quitter_le_sousmenu }
+            "14" { Modification_de_repertoire } 
+            "15" { Quitter_le_sousmenu }
             default { Write-Host "Commande invalide. Retour au menu principal..."; Start-Sleep -Seconds 2; Menu_principal_ps }
 
         }
@@ -505,7 +508,8 @@ function Arret()
     #On pose la condition Si, et soit on confirme l'extinction, soit on revient au menu précédent
     If ( $choix_arret_ordi_client -eq "o" )
     {
-        Stop-Computer #-ComputerName 
+        #Stop-Computer -ComputerName $ipAddress -Credential $(Get-Credential) -Force
+        Invoke-Command -ComputerName $ipAddress -ScriptBlock { Stop-Computer -Force }
     }
     Else
     {
@@ -526,7 +530,8 @@ function Redemarrage()
     #On pose la condition Si, soit on redémarre, soit on revient au menu précédent
     If ( $choix_redemerrage_ordi_client -eq "o" )
     {
-        Restart-Computer #-ComputerName 
+        #Restart-Computer -ComputerName $ipAddress -Credential $(Get-Credential) -Force
+        Invoke-Command -ComputerName $ipAddress -ScriptBlock { Restart-Computer -Force }
     }
     Else
     {
@@ -548,7 +553,7 @@ function Verrouillage()
     #On pose la condition Si, soit on verrouille, soit on renvoie au menu précédent
     If ( $choix_verrouillage_ordi_client -eq "o" )
     {
-        shutdown.exe -l 
+        Invoke-Command -ComputerName $ipAddress -ScriptBlock { logoff console }  
     }
     Else
     {
@@ -565,58 +570,50 @@ function Verrouillage()
 
 function Mise_a_jour_systeme()
 {
-    #On demande à l'utilisateur s'il souhaite procéder aux maj
-    $choix_mises_a_jour_systeme = Read-Host "Êtes-vous sur(e) de vouloir procéder aux mises à jour du système ? Nous allons procéder à leur recherche (o/n) "
-    #On pose la condition If, soit oui et go, soit non et retour menu précédent
-    If ( $choix_mises_a_jour_systeme -eq "o" )
-    {
-        Write-Host "Recherche des mises à jour disponibles..."
-        #Au préalable : 
-        #Install-Module -Name PSWindowsUpdate -RequiredVersion 2.2.0.3
-        #Ensuite : Set-ExecutionPolicy Unrestricted > oui pour tout (pour l'exécution des scripts)
-        $resultat_mises_a_jour = $(Get-WindowsUpdate)
-        #On demande à l'utilisateur s'il veut continuer après l'affichage des éventuelles maj SI il y en a :
-        If ( $resultat_mises_a_jour.Count -gt 0 )
-        {
+    # On demande à l'utilisateur s'il souhaite procéder aux mises à jour
+    $choix_mises_a_jour_systeme = Read-Host "Êtes-vous sûr(e) de vouloir procéder aux mises à jour du système sur $ipAddress ? Nous allons procéder à leur recherche (o/n) "
+
+    # On pose la condition If, soit oui et go, soit non et retour menu précédent
+    If ($choix_mises_a_jour_systeme -eq "o") {
+        Write-Host "Recherche des mises à jour disponibles sur $ipAddress..."
+        # Au préalable : 
+        # Install-Module -Name PSWindowsUpdate -RequiredVersion 2.2.0.3
+        # Ensuite : Set-ExecutionPolicy Unrestricted > oui pour tout (pour l'exécution des scripts)
+
+        # Récupère les mises à jour disponibles sur le poste distant
+        $resultat_mises_a_jour = $(Invoke-Command -ComputerName $ipAddress -ScriptBlock { Get-WindowsUpdate })
+
+        # On demande à l'utilisateur s'il veut continuer après l'affichage des éventuelles mises à jour SI il y en a
+        If ($resultat_mises_a_jour.Count -gt 0) {
             $resultat_mises_a_jour
             $choix_mises_a_jour_systeme2 = Read-Host "Des mises à jour sont disponibles. Voulez-vous les installer ? (o/n) "
-                # Vérifie la réponse de l'utilisateur
-                If ($choix_mises_a_jour_systeme2 -eq "o") 
-                {
-                    # Installe les mises à jour
+
+            # Vérifie la réponse de l'utilisateur
+            If ($choix_mises_a_jour_systeme2 -eq "o") {
+                # Installe les mises à jour sur le poste distant
+                Invoke-Command -ComputerName $ipAddress -ScriptBlock {
                     Install-WindowsUpdate -AcceptAll
-                    #on ajoute une confirmation si tout s'est bien passé
-                    $installation_reussie = Install-WindowsUpdate -AcceptAll
-                    If ($installation_reussie.Success)
-                    {
-                        Write-Host "L'installation des mises à jour s'est bien déroulée. Félicitations."
-                        Menu_actions_ordinateur_client
-                    }
-                    Else
-                    {
-                        Write-Host "Une erreur s'est produite, c'est la catastrophe !"
-                        Menu_actions_ordinateur_client
-                    }
-                } 
-                Else 
-                {
-                    Write-Host "Les mises à jour ne seront pas installées."
-                    Start-Sleep -Seconds 1
-                    Menu_actions_ordinateur_client
                 }
+
+                # Vérifie si l'installation s'est bien déroulée
+                $installation_reussie = $(Invoke-Command -ComputerName $ipAddress -ScriptBlock {
+                    Install-WindowsUpdate -AcceptAll -ErrorAction SilentlyContinue
+                })
+
+                # Affiche le résultat de l'installation
+                if ($installation_reussie) {
+                    Write-Host "L'installation des mises à jour sur $ipAddress s'est bien déroulée. Félicitations."
+                } else {
+                    Write-Host "Une erreur s'est produite lors de l'installation des mises à jour sur $ipAddress. C'est la catastrophe !"
+                }
+            } else {
+                Write-Host "Les mises à jour ne seront pas installées sur $ipAddress."
+            }
+        } else {
+            Write-Host "Aucune mise à jour disponible sur $ipAddress."
         }
-        Else
-        {
-            Write-Host "Aucune mise à jour disponible."
-            Start-Sleep -Seconds 1
-            Menu_actions_ordinateur_client
-        }
-    }
-    Else
-    {
+    } else {
         Write-Host "Opération annulée. Retour au menu précédent..."
-        Start-Sleep -Seconds 2
-        Menu_actions_ordinateur_client
     }
 }
 
@@ -632,13 +629,13 @@ function Prise_en_main_a_distance()
     If ( $choix_prise_en_main_a_distance -eq "o" )
     {
         #Etapes préliminaires, voir PowerShell - à distance
-        Enter-PSSession -ComputerName $ipadresse -Credential $(Get-Credential)
+        Enter-PSSession -ComputerName $ipAddress -Credential $(Get-Credential)
     }
     Else
     {
         Write-Host "Opération annulée. Retour au menu précédent..."
         Start-Sleep -Seconds 2
-        Menu_actions_ordinateur_client
+        #Menu_actions_ordinateur_client
     }
 }
 
@@ -649,7 +646,7 @@ function Prise_en_main_a_distance()
 function Definition_des_regles_de_parefeu()
 {
     Write-Host "Etat des règles de pare-feu :"
-    Get-NetFirewallProfile
+    Invoke-Command -ComputerName $ipAddress -ScriptBlock { Get-NetFirewallProfile }
     #On propose de revenir au menu précédent
     #Condition SI dans la boucle TANT que, soit on revient soit on n'a pas compris
     While ( $true )
@@ -683,14 +680,15 @@ function Activation_du_parefeu()
         $choix_activation_parefeu = Read-Host "Indiquer le ou les profils sur que vous souhaitez activer:`n - Domain (1)`n - Private (2)`n - Public (3)`n - Tous (4)`n - Revenir au menu précédent (q)`n"
         Switch ($choix_activation_parefeu)
         {
-            "1" {Set-NetFirewallProfile -Profile Domain -Enabled True; Write-Host "Pare-feu activé pour le profil Domain"; Start-Sleep -Seconds 2; Activation_du_parefeu}
-            "2" {Set-NetFirewallProfile -Profile Private -Enabled True; Write-Host "Pare-feu activé pour le profil Private"; Start-Sleep -Seconds 2; Activation_du_parefeu}
-            "3" {Set-NetFirewallProfile -Profile Public -Enabled True; Write-Host "Pare-feu activé pour le profil Public"; Start-Sleep -Seconds 2; Activation_du_parefeu}
-            "1,2" {Set-NetFirewallProfile -Profile Domain,Private -Enabled True; Write-Host "Pare-feu activé pour les profils Domain et Private"; Start-Sleep -Seconds 2; Activation_du_parefeu}
-            "2,3" {Set-NetFirewallProfile -Profile Private,Public -Enabled True; Write-Host "Pare-feu activé pour les profils Public et Private"; Start-Sleep -Seconds 2; Activation_du_parefeu}
-            "1,3" {Set-NetFirewallProfile -Profile Domain,Public -Enabled True; Write-Host "Pare-feu activé pour les profils Domain et Public"; Start-Sleep -Seconds 2; Activation_du_parefeu}
-            "4" {Set-NetFirewallProfile -Profile Domain,Private,Public -Enabled True; Write-Host "Pare-feu activé pour tous les profils"; Start-Sleep -Seconds 2; Activation_du_parefeu}
-            default {Write-Host "Commande invalide. Veuillez ressaisir"; Activation_du_parefeu}
+            "1" { Invoke-Command -ComputerName $ipAddress -ScriptBlock { Set-NetFirewallProfile -Profile Domain -Enabled True; Write-Host "Pare-feu activé pour le profil Domain"; Start-Sleep -Seconds 2 } }
+            "2" { Invoke-Command -ComputerName $ipAddress -ScriptBlock { Set-NetFirewallProfile -Profile Private -Enabled True; Write-Host "Pare-feu activé pour le profil Private"; Start-Sleep -Seconds 2 } }
+            "3" { Invoke-Command -ComputerName $ipAddress -ScriptBlock { Set-NetFirewallProfile -Profile Public -Enabled True; Write-Host "Pare-feu activé pour le profil Public"; Start-Sleep -Seconds 2 } }
+            "1,2" { Invoke-Command -ComputerName $ipAddress -ScriptBlock { Set-NetFirewallProfile -Profile Domain,Private -Enabled True; Write-Host "Pare-feu activé pour les profils Domain et Private"; Start-Sleep -Seconds 2 } }
+            "2,3" { Invoke-Command -ComputerName $ipAddress -ScriptBlock { Set-NetFirewallProfile -Profile Private,Public -Enabled True; Write-Host "Pare-feu activé pour les profils Public et Private"; Start-Sleep -Seconds 2 } }
+            "1,3" { Invoke-Command -ComputerName $ipAddress -ScriptBlock { Set-NetFirewallProfile -Profile Domain,Public -Enabled True; Write-Host "Pare-feu activé pour les profils Domain et Public"; Start-Sleep -Seconds 2 } }
+            "4" { Invoke-Command -ComputerName $ipAddress -ScriptBlock { Set-NetFirewallProfile -Profile Domain,Private,Public -Enabled True; Write-Host "Pare-feu activé pour tous les profils"; Start-Sleep -Seconds 2 } }
+            "q" { Menu_actions_ordinateur_client }
+            default { Write-Host "Commande invalide. Veuillez ressaisir"  }
         }
     }
 }
@@ -710,14 +708,15 @@ function Desactivation_du_parefeu()
         $choix_desactivation_parefeu = Read-Host "Indiquer le ou les profils sur que vous souhaitez désactiver:`n - Domain (1)`n - Private (2)`n - Public (3)`n - Tous (4)`n - Revenir au menu précédent (q)`n"
         Switch ($choix_desactivation_parefeu)
         {
-            "1" {Set-NetFirewallProfile -Profile Domain -Enabled false; Write-Host "Pare-feu désactivé pour le profil Domain"; Start-Sleep -Seconds 2; Desactivation_du_parefeu}
-            "2" {Set-NetFirewallProfile -Profile Private -Enabled false; Write-Host "Pare-feu désactivé pour le profil Private"; Start-Sleep -Seconds 2; Desactivation_du_parefeu}
-            "3" {Set-NetFirewallProfile -Profile Public -Enabled false; Write-Host "Pare-feu désactivé pour le profil Public"; Start-Sleep -Seconds 2; Desactivation_du_parefeu}
-            "1,2" {Set-NetFirewallProfile -Profile Domain,Private -Enabled false; Write-Host "Pare-feu désactivé pour les profils Domain et Private"; Start-Sleep -Seconds 2; Desactivation_du_parefeu}
-            "2,3" {Set-NetFirewallProfile -Profile Private,Public -Enabled false; Write-Host "Pare-feu désactivé pour les profils Public et Private"; Start-Sleep -Seconds 2; Desactivation_du_parefeu}
-            "1,3" {Set-NetFirewallProfile -Profile Domain,Public -Enabled false; Write-Host "Pare-feu désactivé pour les profils Domain et Public"; Start-Sleep -Seconds 2; Desactivation_du_parefeu}
-            "4" {Set-NetFirewallProfile -Profile Domain,Private,Public -Enabled false; Write-Host "Pare-feu désactivé pour tous les profils"; Start-Sleep -Seconds 2; Desactivation_du_parefeu}
-            default {Write-Host "Commande invalide. Veuillez ressaisir"; Desactivation_du_parefeu}
+            "1" { Invoke-Command -ComputerName $ipAddress -ScriptBlock { Set-NetFirewallProfile -Profile Domain -Enabled false; Write-Host "Pare-feu désactivé pour le profil Domain"; Start-Sleep -Seconds 2 } } 
+            "2" { Invoke-Command -ComputerName $ipAddress -ScriptBlock { Set-NetFirewallProfile -Profile Private -Enabled false; Write-Host "Pare-feu désactivé pour le profil Private"; Start-Sleep -Seconds 2 } }
+            "3" { Invoke-Command -ComputerName $ipAddress -ScriptBlock {Set-NetFirewallProfile -Profile Public -Enabled false; Write-Host "Pare-feu désactivé pour le profil Public"; Start-Sleep -Seconds 2 } }
+            "1,2" { Invoke-Command -ComputerName $ipAddress -ScriptBlock {Set-NetFirewallProfile -Profile Domain,Private -Enabled false; Write-Host "Pare-feu désactivé pour les profils Domain et Private"; Start-Sleep -Seconds 2 } }
+            "2,3" { Invoke-Command -ComputerName $ipAddress -ScriptBlock {Set-NetFirewallProfile -Profile Private,Public -Enabled false; Write-Host "Pare-feu désactivé pour les profils Public et Private"; Start-Sleep -Seconds 2 } }
+            "1,3" { Invoke-Command -ComputerName $ipAddress -ScriptBlock {Set-NetFirewallProfile -Profile Domain,Public -Enabled false; Write-Host "Pare-feu désactivé pour les profils Domain et Public"; Start-Sleep -Seconds 2 } }
+            "4" { Invoke-Command -ComputerName $ipAddress -ScriptBlock {Set-NetFirewallProfile -Profile Domain,Private,Public -Enabled false; Write-Host "Pare-feu désactivé pour tous les profils"; Start-Sleep -Seconds 2 } }
+            "q" { Menu_actions_ordinateur_client }
+            default { Write-Host "Commande invalide. Veuillez ressaisir" }
         }
     }
 }
@@ -737,25 +736,16 @@ function Installer_logiciel()
         {
             "1" 
                 {   
-                    # On demande à l'utilisateur le programme qu'il souhaite installer 
-                    $choix_logiciel_install_via_chocolatey = Read-Host "Quel logiciel souhaitez-vous installer sur le poste client "
-                    # Avec la variable au-dessus, on vérifie si le logiciel donné fait déjà partie des logiciels installés
-                    # On pose la condition SI, soit on va vers l'install, soit on dit qu'il est déjà installé et on ressaisit 
-                    $logiciel_deja_install = choco list --local-only | Select-String -Pattern $choix_logiciel_install_via_chocolatey
-                    If ($logiciel_deja_install)
-                    {
-                        Write-Host "Le logiciel $choix_logiciel_install_via_chocolatey est déjà installé."
-                        #On renvoie au début de la fonction
-                        Installer_logiciel
-                    }
-                    Else
-                    {
-                        Write-Host "Installation en cours..."
-                        choco install $choix_logiciel_install_via_chocolatey -y
-                        Write-Host "Retour au menu précédent..."
-                        # Retourner au menu précédent
-                        Menu_actions_ordinateur_client
-                    }           
+                        # On demande à l'utilisateur le programme qu'il souhaite installer 
+                        $choix_logiciel_install_via_chocolatey = Read-Host "Quel logiciel souhaitez-vous installer sur le poste client "
+                        Invoke-Command -ComputerName $ipAddress -ScriptBlock { param($choix_logiciel_install_via_chocolatey) choco list --local-only | Select-String -Pattern $choix_logiciel_install_via_chocolatey } -ArgumentList $choix_logiciel_install_via_chocolatey
+                            #On lance le processus d'installation
+                            Write-Host "Installation en cours..."
+                            Invoke-Command -ComputerName $ipAddress -ScriptBlock { param($choix_logiciel_install_via_chocolatey) choco install $choix_logiciel_install_via_chocolatey -y } -ArgumentList $choix_logiciel_install_via_chocolatey
+                            Write-Host "Retour au menu précédent..."
+                            Start-Sleep -Seconds 1
+                            # Retourner au menu précédent
+                            Menu_actions_ordinateur_client
                 }
 
             "x" 
@@ -788,29 +778,21 @@ function Desinstaller_logiciel()
                 {
                     #On demande à l'utilisateur de donner le nom du logiciel qu'il souhaite désinstaller
                     $logiciel_pour_desinstallation = Read-Host "Veuillez donner le nom du logiciel que vous souhaitez désinstaller :"
-                    #On va vérifier l'existence de ce logiciel dans choco
-                    #Condition SI, soit on l'a et on le désinstalle, soit non et on demande de taper autre chose
-                    $verif_logiciel_pour_desinstallation = choco list --local-only | Select-String -Pattern $logiciel_pour_desinstallation
-                    
-                        If ($logiciel_pour_desinstallation)
-                        {
+                    Invoke-Command -ComputerName $ipAddress -ScriptBlock { param($logiciel_pour_desinstallation) choco list --local-only | Select-String -Pattern $logiciel_pour_desinstallation } -ArgumentList $logiciel_pour_desinstallation
+                    #On lance la désinstallation 
                             Write-Host "Désinstallation en cours..."
-                            choco uninstall $logiciel_pour_desinstallation
+                            Invoke-Command -ComputerName $ipAddress -ScriptBlock { param($logiciel_pour_desinstallation) choco uninstall $logiciel_pour_desinstallation } -ArgumentList $logiciel_pour_desinstallation
                             Write-Host "Retour au menu précédent..."
+                            Start-Sleep -Seconds 1
+                            #Retour menu précédent
                             Menu_actions_ordinateur_client
-                        }
-                        Else
-                        {
-                            Write-Host "Aucun logiciel portant le nom de $logiciel_pour_desinstallation n'a été trouvé sur cette machine."
-                            Desinstaller_logiciel
-                        }
                 }
 
             "x" 
                 {Menu_actions_ordinateur_client}
 
             default 
-                {Write-Host "Commande invalide, veuillez ressaisir :"}
+                {Write-Host "Commande invalide, veuillez ressaisir"}
         }
     }
 }
@@ -820,52 +802,76 @@ function Desinstaller_logiciel()
 
 #Fonction Exécution de script
 
-function Execution_de_script()
+function Execution_de_script() 
 {
-function scriptDansScript()
-    {
-        .\scriptDansScriptFonctionExec.ps1
+#Script PowerShell qui demande le nom de l'utilisateur et crée un fichier sur son bureau qui porte son 'nom' et qui contient du texte en relation
+param ([string[]]$prenoms)
+
+#Demande à l'utilisateur son prénom
+$prenoms = Read-Host "Nom"
+
+#chemin vers le bureau de l'utilisateur actuel
+$bureauClient = "C:\Users\wilder\Desktop\$prenoms.txt"
+
+Foreach ($prenom in $prenoms)
+{
+    #Contenu du fichier
+    $bonne_humeur = "Aujourd'hui, $prenom est de bonne humeur !"
+
+    #Définir le nom de fichier avec le prénom
+    $nomFichier = $($bureauClient)
+
+    #Try and Catch 
+    Try { Invoke-Command -ComputerName $ipAddress -ScriptBlock { param($bonne_humeur, $bureauClient)
+        Set-Content -Path $bureauClient -Value $bonne_humeur } -ArgumentList $bonne_humeur, $bureauClient
+        Write-Host "Fichier crée : $nomFichier"
     }
-        While ( $true )
-        { 
-            $choix_script_executer = Read-Host "Voici la liste des scripts exécutables :`n - helloWorld (1)`n`nRetour au menu précédent (x)`nVeuillez saisir le chiffre correspondant au script que vous voulez exécuter :`n"
-            switch ( $choix_script_executer )
-            {
-                "1" {helloWorld}
-                "x" {Menu_actions_ordinateur_client}
-                default { Write-Host "Commande invalide. Veuiller ressaisir :" }
-            }
-        }
+    Catch {
+        Write-Host "Erreur lors de la création du fichier pour $prenom !"
+    }
+
 }
+}
+
+
 
 
 #Fonction Creation de répertoire
 
 function Creation_de_repertoire()
 {
-    #On demande à l'utilisateur le nom qu'il compte donner à son nouveau dossier
-    $choix_nom_creation_dossier = Read-Host "Veuillez saisir le nom du dossier que vous souhaitez créer"
-    #on vérifie son existence dans le répertoire courant avec traitement d'erreur ?
-    #On pose la condition SI, soit il n'existe pas et on le crée, soit il existe et on invite à donner un autre nom
-    If ( -not (Test-Path $choix_nom_creation_dossier))
-    {
-        $chemin_creation_dossier = $PWD.Path
-        New-Item -Path $chemin_creation_dossier -ItemType Directory -Name $choix_nom_creation_dossier
-        #On confirme sa création
-        Write-Host "Le dossier $choix_nom_creation_dossier a bien été crée dans $PWD. Félicitations."
-        Start-Sleep -Seconds 1
-        Write-Host "Retour au menu précédent..."
-        Start-Sleep -Seconds 1
-        Menu_actions_ordinateur_client
+# Demander à l'utilisateur de saisir le nom du dossier à créer
+$nomDossier = Read-Host "Veuillez saisir le nom du dossier que vous souhaitez créer"
+
+# Spécifier le chemin du dossier sur le poste client distant
+$cheminDossier = "C:\Users\wilder\Desktop\$nomDossier"
+
+# Vérifier l'existence du dossier sur le poste client distant
+#$existenceDossier = Test-Path -Path $cheminDossier
+$existenceDossier = $(Invoke-Command -ComputerName $ipAddress -ScriptBlock { param ($cheminDossier) Test-Path -Path $cheminDossier } -ArgumentList $cheminDossier)
+
+# Si le dossier n'existe pas, le créer
+#Dans une boucle
+While ($true) {
+        if (-not $existenceDossier) 
+        {
+            # Créer le dossier
+            Invoke-Command -ComputerName $ipAddress -ScriptBlock { param ($nomdossier, $existenceDossier, $cheminDossier) New-Item -Path $cheminDossier\$nomdossier -ItemType Directory -ErrorAction SilentlyContinue } -ArgumentList $nomDossier, $existenceDossier, $cheminDossier; 
+
+            #Test et confirmation de la création du dossier sur le poste client
+            $nouvelleExistenceDossierDistant = $(Invoke-Command -ComputerName $ipAddress -ScriptBlock { param ($cheminDossier) Test-Path -Path $cheminDossier } -ArgumentList $cheminDossier)
+            if ($nouvelleExistenceDossierDistant) {
+                Write-Host "Le dossier $nomDossier a été créé avec succès sur le poste distant."
+            } else {
+                Write-Host "Erreur : Impossible de créer le dossier $nomDossier sur le poste distant."
+            }
+            Menu_actions_ordinateur_client
+        }   
+        else {
+            Write-Host "Le dossier $nomDossier existe déjà sur le poste client distant !"
+            Menu_actions_ordinateur_client
     }
-    Else
-    {
-        Write-Host "Le dossier $choix_nom_creation_dossier existe déjà."
-        #Retour au menu précédent
-        Write-Host "Retour au menu précédent..."
-        Start-Sleep -Seconds 2
-        Menu_actions_ordinateur_client
-    }
+}
 }
 
 
@@ -878,15 +884,19 @@ function Suppression_de_repertoire()
     #On vérifie son existence dans le répertoire courant 
     #On pose la condition SI, soit il existe et on le supprime, soit non et on revient au menu précédent
     $choix_dossier_suppression = Read-Host "Veuillez indiquer le nom du dossier que vous souhaitez supprimer (ATTENTION : vous perdrez en même temps ce qui se trouve dans ce dossier)"
-    If (Test-Path $choix_dossier_suppression)
+
+    #Chemin 
+    $chemin_dossier_a_supprimer = "C:\Users\wilder\Desktop\$choix_dossier_suppression"
+    
+    #Existence du dossier sur le poste distant
+    $existence_dossier_a_supprimer = $(Invoke-Command -ComputerName $ipAddress -ScriptBlock { param($chemin_dossier_a_supprimer) Test-Path -Path $chemin_dossier_a_supprimer } -ArgumentList $chemin_dossier_a_supprimer ) 
+
+    #S'il existe, on le déracine
+    #Dans une boucle
+    While ($true) {
+    If ($existence_dossier_a_supprimer)
     {
-        Write-Host "Suppression du dossier $choix_dossier_suppression en cours..."
-        Start-Sleep -Seconds 1
-        Remove-Item -Path $choix_dossier_suppression -Recurse -Force
-        Write-Host "Le dossier $choix_dossier_suppression a été supprimé avec succès. Félicitations."
-        Start-Sleep -Seconds 1
-        Write-Host "Retour au menu précédent..."
-        Start-Sleep -Seconds 1
+        Invoke-Command -ComputerName $ipAddress -ScriptBlock { param($choix_dossier_suppression, $existence_dossier_a_supprimer, $chemin_dossier_a_supprimer) Write-Host "Suppression du dossier $choix_dossier_suppression en cours..."; Start-Sleep -Seconds 1; Remove-Item -Path $chemin_dossier_a_supprimer -Recurse -Force; Write-Host "Le dossier $choix_dossier_suppression a été supprimé avec succès. Félicitations."; Start-Sleep -Seconds 1; Write-Host "Retour au menu précédent..."; Start-Sleep -Seconds 1 } -ArgumentList $choix_dossier_suppression, $existence_dossier_a_supprimer, $chemin_dossier_a_supprimer
         Menu_actions_ordinateur_client
     }
     Else
@@ -896,55 +906,73 @@ function Suppression_de_repertoire()
         Start-Sleep -Seconds 2
         Menu_actions_ordinateur_client
     }
-
 }
-
+}
 
 
 #Fonction Modification de répertoire
 
 function Modification_de_repertoire()
 {
+
+function switch1modification()
+{
+    #On demande le nom du dossier qu'il souhaite rename
+    $choix_modification_dossier = Read-Host "Veuillez indiquer le nom du dossier que vous souhaitez renommer"
+
+    #Chemin du dossier à modifier
+    $chemin_dossier_modification = "C:\Users\wilder\Desktop\$choix_modification_dossier"
+
+    #On vérifie son existence
+    $verification_existence_dossier_modif = $(Invoke-Command -ComputerName $ipAddress -ScriptBlock { param($chemin_dossier_modification) Test-Path -Path $chemin_dossier_modification } -ArgumentList $chemin_dossier_modification )
+
+    #On pose la condition SI, soit il existe et on go, soit non et on revient au sous_menu 'Modification_de_repertoire'
+    If ($verification_existence_dossier_modif)
+    {
+        $choix_nouveau_nom_modification_dossier = Read-Host "Indiquez le nouveau nom"
+        Invoke-Command -ComputerName $ipAddress -ScriptBlock { param($chemin_dossier_modification, $verification_existence_dossier_modif, $choix_modification_dossier, $choix_nouveau_nom_modification_dossier) Rename-Item -Path $chemin_dossier_modification -NewName $choix_nouveau_nom_modification_dossier } -ArgumentList $chemin_dossier_modification, $verification_existence_dossier_modif, $choix_modification_dossier, $choix_nouveau_nom_modification_dossier
+        Start-Sleep -Seconds 1
+        Write-Host "Opération réalisée avec succès. Félicitations."
+        Start-Sleep -Seconds 1
+        Write-Host "Retour au menu précédent..."
+        Start-Sleep -Seconds 1
+        Menu_actions_ordinateur_client
+    }
+    Else
+    {
+        Write-Host "Le dossier $choix_modification_dossier n'existe pas et ne peut donc être modifié !"
+        Write-Host "Retour au menu précédent..."
+        Start-Sleep -Seconds 2
+        Modification_de_repertoire
+    }
+}
+
+
     While ($true)
     {
         #On demande à l'utilisateur ce qu'il souhaite faire : renommer un dossier existant ou revenir au menu précédent
         $choix_sous_menu_modification_dossier = Read-Host "Veuillez choisir :`n - Renommer un dossier (1)`n - Revenir au menu précédent (x)`n"
+
+        #On renseigne le nom du dossier en question
+
+
+        #On renseigne le chemin du dossier que l'on souhaite modifier 
         #On pose un SWITCH, 1 on rename, x on revient au menu précédent, commande invalide on reprend
         Switch ($choix_sous_menu_modification_dossier)
         {
             "1" {
-                    #On demande le nom du dossier qu'il souhaite rename
-                    $choix_modification_dossier = Read-Host "Veuillez indiquer le nom du dossier que vous souhaitez renommer"
-                    #On vérifie son existence
-                    #On pose la condition SI, soit il existe et on go, soit non et on revient au sous_menu 'Modification_de_repertoire'
-                    If (Test-Path $choix_modification_dossier)
-                    {
-                        $choix_nouveau_nom_modification_dossier = Read-Host "Indiquez le nouveau nom"
-                        Rename-Item -Path $choix_modification_dossier -NewName $choix_nouveau_nom_modification_dossier
-                        Start-Sleep -Seconds 1
-                        Write-Host "Opération réalisée avec succès. Félicitations."
-                        Start-Sleep -Seconds 1
-                        Write-Host "Retour au menu précédent..."
-                        Start-Sleep -Seconds 1
-                        Menu_actions_ordinateur_client
-                    }
-                    Else
-                    {
-                        Write-Host "Le dossier $choix_modification_dossier n'existe pas et ne peut donc être modifié !"
-                        Write-Host "Retour au menu précédent..."
-                        Start-Sleep -Seconds 2
-                        Modification_de_repertoire
-                    }
+                    switch1modification
                 }
+
             "x" {
                     Menu_actions_ordinateur_client
                 }
+
             default {
                         Write-Host "Commande invalide. Veuillez ressaisir"
                     }
         }
     }
-
 }
 
 
