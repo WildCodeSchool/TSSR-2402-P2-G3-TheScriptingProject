@@ -33,12 +33,12 @@ Une fois les configurations faites, nous devons pour la partie Linux ajouter un 
 
 ## **Installation des sources nécessaires au bon fonctionnement**
 
-Bien entendu, il est nécessaire avant toute chose de procéder à une mise à jour système, aussi bien sur les Serveurs, que sur les Clients
+Bien entendu, il est nécessaire avant toute chose de procéder à une mise à jour système, aussi bien sur les Serveurs, que sur les Clients.
 
 * bash : (sudo) `apt update && apt upgrade -y`
 * Windows : Mise à jour système en mode graphique
 
-Il vous faudra également donner les droits d'accés au scripts en terme d'exécution, si cela n'est pas déjà fait.
+Il vous faudra également donner les droits d'accès au script en terme d'exécution, si cela n'est pas déjà fait.
 
 ### **Installation et configuration ssh sur Linux**
 
@@ -48,7 +48,7 @@ Assurez-vous que votre système est à jour avec `apt update && apt upgrade -y`
 
 Installez le paquet `openssh-server` avec `apt install openssh-server`
 
-Il vous sera demander durant l'installation si vous souhaitez continuer, saisissez `Y` puis `Entrée`
+Il vous sera demandé durant l'installation si vous souhaitez continuer, saisissez `Y` puis `Entrée`
 
 ![ssh_Install_SRV_01](attachment/ssh_Install_SRV_01.JPG)
 
@@ -66,7 +66,7 @@ De la même manière que pour le Serveur Debian, assurez-vous tout d'abord que v
 
 Installez le paquet `openssh-server` avec `sudo apt install openssh-server`
 
-Il vous sera demander durant l'installation si vous souhaitez continuer, saisissez `O` puis `Entrée`
+Il vous sera demandé durant l'installation si vous souhaitez continuer, saisissez `O` puis `Entrée`
 
 ![ssh_Install_CLI_01](attachment/ssh_Install_CLI_01.JPG)
 
