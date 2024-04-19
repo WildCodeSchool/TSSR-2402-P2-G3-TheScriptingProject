@@ -20,20 +20,20 @@
 
 ## **Présentation du Projet et Objectifs finaux**
 
-Le Projet **_Scripting_** consiste à créer deux scripts qui s'exécute depuis un serveur et effectue des tâches sur des machines distantes.
+Le Projet **_Scripting_** consiste à créer deux scripts qui s'exécutent depuis un serveur et effectuent des tâches sur des machines distantes.
 
 Le premier est sous _bash_ pour commander depuis un Serveur _Debian_ des Clients sous _Ubuntu_.
 
 Le second est sous _Powershell_ afin de commander depuis un Serveur _Windows Server 2022_ des Clients sous _Windows 10 Pro_.
 
-La documentation jointe au Projet est constituée de 5 fichiers (dont 3 au format markdown), ainsi que les deux scripts respectivement en extension .sh (pour le script bash) et .ps1 (pour le script Powershell) :
+La documentation jointe au Projet est constituée de 5 fichiers (dont 3 au format markdown, ainsi que les deux scripts respectivement en extension .sh (pour le script bash) et .ps1 (pour le script Powershell)) :
 * une documentation générale (README.md)
 * une documentation administrateur (INSTALL.md)
 * une documentation utilisateur (USER_GUIDE.md)
 * un script _bash_ fonctionnel
 * un script _Powershell_ fonctionnel
 
-Les deux scripts Powershell et bash, se trouve dans le dossier `attachment` du dépôt, ainsi que toutes les captures d'écran nécessaires à l'élaboration de la documentation.
+Les deux scripts Powershell et bash se trouvent dans le dossier `attachment` du dépôt, ainsi que toutes les captures d'écran nécessaires à l'élaboration de la documentation.
 
 Un dépôt GitHub a été créé à cet effet : [TSSR-2402-P2-G3-TheScriptingProject](https://github.com/WildCodeSchool/TSSR-2402-P2-G3-TheScriptingProject)
 
@@ -44,7 +44,7 @@ L'équipe de projet a fait le choix de ne pas le réaliser afin de remplir toute
 
 L'intérêt du Projet consiste à faciliter et rassembler les différentes tâches d'Administration, afin d'effectuer des actions ou d'extraire des informations sur les postes Clients et les Utilisateurs depuis le Serveur.
 
-Des fichiers de logs sont également conservés dans le Serveur, afin d'avoir un historique complet, et ainsi une traçabilité.
+Des fichiers de logs sont également conservés dans le Serveur, afin d'avoir un historique complet et ainsi une traçabilité.
 
 Ces fichiers comprennent la navigation au sein des différents menus du script, ainsi que le suivi des actions effectuées, et la centralisation des informations récoltées.
 
@@ -156,7 +156,7 @@ Activités et répartitions des tâches
 
 Le script bash n'a pas présenté de réelles difficultés, nous avons peiné à trouver quelques commandes, mais au final il est entièrement fonctionnel.
 
-En revanche, cela a été une toute autre affaire avec de nombreuses comandes Powershell, nous pensions qu'il aurait été simple de transposer de bash vers Powershell, mais nous avons vite déchanter lorsqu'il a fallu trouver où aller chercher les informations dont nous avions besoin.
+En revanche, cela a été une toute autre affaire avec de nombreuses commandes Powershell, nous pensions qu'il aurait été simple de transposer de bash vers Powershell, mais nous avons vite déchanté lorsqu'il a fallu trouver où aller chercher les informations dont nous avions besoin.
 
 ## **Solutions et/ou alternatives trouvées pour palier aux problèmes**
 
@@ -164,7 +164,7 @@ Afin de palier aux problèmes rencontrés avec le script Powershell, nous nous s
 
 ## **Next-step : Améliorations possibles envisagées**
 
-La solution optimale qui pourrait être apporter un vrai plus aux deux scripts, serait une version en mode graphique pour chacun d'eux.
+La solution optimale qui pourrait apporter un vrai plus aux deux scripts, serait une version en mode graphique pour chacun d'eux.
 
 Nous aurions, pour se faire, besoin d'outil tel que [zenity](https://doc.ubuntu-fr.org/zenity) pour le script bash, ou [WPF](https://learn.microsoft.com/fr-fr/archive/msdn-magazine/2011/july/msdn-magazine-windows-powershell-with-wpf-secrets-to-building-a-wpf-application-in-windows-powershell) pour le Powershell
 
