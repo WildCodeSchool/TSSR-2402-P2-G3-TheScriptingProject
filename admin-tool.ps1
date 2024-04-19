@@ -182,7 +182,6 @@ function menuActionInfo {
 
 # Menu Action Utilisateur
 function menuActionUser {
-    Clear-Host
     # Rappel du choix de Client
     Write-Host "`nVous êtes actuellement connecté au Client $clientName`n" -ForegroundColor Cyan
     # Listing des options
@@ -195,6 +194,7 @@ function menuActionUser {
     Write-Host "4 - Désactivation d'un compte Utilisateur"
     Write-Host "5 - Ajout d'un Utilisateur à un Groupe"
     Write-Host "6 - Suppression d'un Utilisateur d'un Groupe"
+    Write-Host "R - Retour au Menu Action/Information"
     Write-Host "M - Retour au Menu Principal"
     Write-Host "x - Quitter l'outil d'Administration"
 
@@ -207,19 +207,32 @@ function menuActionUser {
     # Redirection en fonction du choix du menu
     switch ($targetActionUser) {
         "1" {
-            # Requête du nom d'Utilisateur
             $userName = Read-Host "`nPour quel Utilisateur souhaitez-vous créer un compte ?"
-            # Demande de confirmation de l'Utilisateur
-            $userValidate = Read-Host "`nConfirmez-vous vouloir créer un compte pour l'Utilisateur $userName ? (O/n)"
-            if ($userValidate -eq "O") {
-                # Si OK >> Continue
-                # Connexion à distance sur le Client
-                # Vérification de l'existence de l'Utilisateur dans la table
-            
-                Write-Host "`nL'Utisateur $userName a été créé avec succés`n" -ForegroundColor Cyan
-                $eventLog = "Création du compte Utilisateur $userName"
-                eventLogTask
-                menuActionUser
+            $optionValidate = Read-Host "`nConfirmez-vous vouloir créer un compte pour l'Utilisateur $userName ? (O/n)"
+            if ($optionValidate -eq "O") {
+                Invoke-Command -ComputerName $clientIP -ScriptBlock {
+                    # Vérification que l'utilisateur existe
+                    if (Get-LocalUser -Name $userName -ErrorAction SilentlyContinue) {
+                        Write-Host "`nErreur : L'Utilisateur $userName existe déjà`n"
+                        menuActionUser
+                    }
+                    else {
+                        try {
+                            Invoke-Command -ComputerName $clientIP -ScriptBlock {
+                                param($userName)
+                                New-LocalUser -Name $userName 
+                                Write-Host "`nLe compte de l'Utilisateur $userName a été créé avec succés`n"
+                            } -Credential wilder -ArgumentList $userName -ErrorAction Stop
+                            $eventLog = "Création du compte de l'Utilisateur $userName sur $clientName"
+                            eventLogTask
+                            menuActionUser
+                        }
+                        catch {
+                            Write-Host "`nErreur : Lors de la création du compte de l'Utilisateur`n"
+                            menuActionUser
+                        }
+                    }
+                } -Credential wilder
             }
             else {
                 notConfirmed
@@ -227,45 +240,181 @@ function menuActionUser {
             }
         }
         "2" {
-            # Requête du nom d'Utilisateur
-            $userName = Read-Host "`nPour quel Utilisateur souhaitez-vous changer le mot de passe ?"
-            # Demande de confirmation de l'Utilisateur
-            $userValidate = Read-Host "`nConfirmez-vous vouloir changer le mot de passe de l'Utilisateur $userName ? (O/n)"
-            if ($userValidate -eq "O") {
-                # Si OK >> Continue
-                # Vérification de l'existence de l'Utilisateur dans la table
-                # Connexion à distance sur le Client
+            $userName = Read-Host "`nQuel Utilisateur souhaitez-vous changer le Mot de Passe ?"
+            $optionValidate = Read-Host "`nConfirmez-vous vouloir changer le Mot de Passe de l'Utilisateur $userName ? (O/n)"
+            if ($optionValidate -eq "O") {
+                Invoke-Command -ComputerName $clientIP -ScriptBlock {
+                    # Vérification que l'utilisateur existe
+                    if (-not (Get-LocalUser -Name $userName -ErrorAction SilentlyContinue)) {
+                        Write-Host "`nErreur : L'Utilisateur $userName n'existe pas`n"
+                        menuActionUser
+                    }
+                    else {
+                        try {
+                            Invoke-Command -ComputerName $clientIP -ScriptBlock {
+                                param($userName)
+                                Set-LocalUser -Name $userName -Password (ConvertTo-SecureString -AsPlainText -Force) 
+                                Write-Host "`nLe Mot de Passe de l'Utilisateur $userName a été modifié avec succés`n"
+                            } -Credential wilder -ArgumentList $userName -ErrorAction Stop
+                            $eventLog = "Modification du Mot de Passe de l'Utilisateur $userName sur $clientName"
+                            eventLogTask
+                            menuActionUser
+                        }
+                        catch {
+                            Write-Host "`nErreur : Lors du changement de Mot de Passe de l'Utilisateur`n"
+                            menuActionUser
+                        }
+                    }
+                } -Credential wilder
             }
             else {
-                
+                notConfirmed
+                menuActionUser
             }
-            Invoke-Command -ComputerName $clientIP -ScriptBlock {
-                # Demande de confirmation de l'Utilisateur
-            } -Credential wilder 
         }
         "3" {
-            # Connexion à disance sur le Client
-            Invoke-Command -ComputerName $clientIP -ScriptBlock {
-
-            } -Credential wilder 
+            $userName = Read-Host "`nQuel Utilisateur souhaitez-vous supprimer ?"
+            $optionValidate = Read-Host "`nConfirmez-vous vouloir supprimer l'Utilisateur $userName ? (O/n)"
+            if ($optionValidate -eq "O") {
+                Invoke-Command -ComputerName $clientIP -ScriptBlock {
+                    # Vérification que l'utilisateur existe
+                    if (-not (Get-LocalUser -Name $userName -ErrorAction SilentlyContinue)) {
+                        Write-Host "`nErreur : L'Utilisateur $userName n'existe pas`n"
+                        menuActionUser
+                    }
+                    else {
+                        try {
+                            Invoke-Command -ComputerName $clientIP -ScriptBlock {
+                                param($userName)
+                                Remove-LocalUser -Name $userName
+                                Write-Host "`nLe compte $userName a été supprimé avec succés`n"
+                            } -Credential wilder -ArgumentList $userName -ErrorAction Stop
+                            $eventLog = "Suppression de l'Utilisateur $userName sur $clientName"
+                            eventLogTask
+                            menuActionUser
+                        }
+                        catch {
+                            Write-Host "`nErreur : Lors de la suppression de l'Utilisateur`n"
+                            menuActionUser
+                        }
+                    }
+                } -Credential wilder
+            }
+            else {
+                notConfirmed
+                menuActionUser
+            }
         }
         "4" {
-            # Connexion à disance sur le Client
-            Invoke-Command -ComputerName $clientIP -ScriptBlock {
-
-            } -Credential wilder 
+            $userName = Read-Host "`nQuel Utilisateur souhaitez-vous désactiver ?"
+            $optionValidate = Read-Host "`nConfirmez-vous vouloir désactiver l'Utilisateur $userName ? (O/n)"
+            if ($optionValidate -eq "O") {
+                Invoke-Command -ComputerName $clientIP -ScriptBlock {
+                    # Vérification que l'utilisateur existe
+                    if (-not (Get-LocalUser -Name $userName -ErrorAction SilentlyContinue)) {
+                        Write-Host "`nErreur : L'Utilisateur $userName n'existe pas`n"
+                        menuActionUser
+                    }
+                    else {
+                        try {
+                            Invoke-Command -ComputerName $clientIP -ScriptBlock {
+                                param($userName)
+                                Disable-LocalUser $userName -Confirm
+                                Write-Host "`nLe compte $userName a été désactivé avec succés`n"
+                            } -Credential wilder -ArgumentList $userName -ErrorAction Stop
+                            $eventLog = "Désactivation de l'Utilisateur $userName sur $clientName"
+                            eventLogTask
+                            menuActionUser
+                        }
+                        catch {
+                            Write-Host "`nErreur : Lors de la désactivation de l'Utilisateur`n"
+                            menuActionUser
+                        }
+                    }
+                } -Credential wilder
+            }
+            else {
+                notConfirmed
+                menuActionUser
+            }
         }
         "5" {
-            # Connexion à disance sur le Client
-            Invoke-Command -ComputerName $clientIP -ScriptBlock {
-
-            } -Credential wilder 
+            $userName = Read-Host "`nQuel Utilisateur souhaitez-vous ajouter à un Groupe ?"
+            $groupName = Read-Host "`nAvec quel Groupe souhaitez-vous intéragir ?"
+            $optionValidate = Read-Host "`nConfirmez-vous vouloir ajouter l'Utilisateur $userName du Groupe $groupName ? (O/n)"
+            if ($optionValidate -eq "O") {
+                # Si OK >> Continue
+                # Connexion à disance sur le Client
+                Invoke-Command -ComputerName $clientIP -ScriptBlock {
+                    # Vérification de l'existence de l'Utilisateur
+                    if (Get-LocalUser -Name $userName -ErrorAction SilentlyContinue) {
+                        Write-Host "`nErreur : L'Utilisateur $userName n'existe pas`n" -ForegroundColor Yellow
+                        menuActionUser
+                    }
+                    else {
+                        try {
+                            Invoke-Command -ComputerName $clientIP -ScriptBlock {
+                                param($groupName, $userName)
+                                Add-LocalGroupMember -Group $using:groupName -Member $using:userName -Confirm
+                                Write-Host "`nL'Utilisateur $userName a été ajouté du Groupe $groupName avec succés`n"
+                            } -Credential wilder -ArgumentList $groupName -ErrorAction Stop
+                            $eventLog = "Ajout de $userName au Groupe $groupName sur $clientName"
+                            eventLogTask
+                            menuActionUser
+                        }
+                        catch {
+                            Write-Host "`nErreur : Lors de l'ajout de l'utilisateur au groupe`n" -ForegroundColor Yellow
+                            menuActionUser
+                        }
+                    }
+                } 
+            }
+            else {
+                notConfirmed
+                menuActionUser
+            }
         }
         "6" {
-            # Connexion à disance sur le Client
-            Invoke-Command -ComputerName $clientIP -ScriptBlock {
-
-            } -Credential wilder 
+            $userName = Read-Host "`nQuel Utilisateur souhaitez-vous retirer d'un Groupe ?"
+            $groupName = Read-Host "`nAvec quel Groupe souhaitez-vous intéragir ?"
+            $optionValidate = Read-Host "`nConfirmez-vous vouloir retirer l'Utilisateur $userName du Groupe $groupName ? (O/n)"
+            if ($optionValidate -eq "O") {
+                # Si OK >> Continue
+                # Connexion à disance sur le Client
+                Invoke-Command -ComputerName $clientIP -ScriptBlock {
+                    # Vérification de l'existence de l'Utilisateur
+                    if (Get-LocalUser -Name $userName -ErrorAction SilentlyContinue) {
+                        Write-Host "`nErreur : L'Utilisateur $userName n'existe pas`n" -ForegroundColor Yellow
+                        menuActionUser
+                    }
+                    else {
+                        try {
+                            Invoke-Command -ComputerName $clientIP -ScriptBlock {
+                                param($groupName, $userName)
+                                Remove-LocalGroupMember -Group $using:groupName -Member $using:userName -Confirm
+                                Write-Host "`nL'Utilisateur $userµName a été supprimé du Groupe $groupName avec succés`n"
+                            } -Credential wilder -ArgumentList $groupName -ErrorAction Stop
+                            $eventLog = "Suppression de $userName du Groupe $groupName sur $clientName"
+                            eventLogTask
+                            menuActionUser
+                        }
+                        catch {
+                            Write-Host "`nErreur : Lors de la suppression de l'utilisateur au groupe`n" -ForegroundColor Yellow
+                            menuActionUser
+                        }
+                    }
+                } 
+            }
+            else {
+                notConfirmed
+                menuActionUser
+            }
+        }
+        "R" {
+            # Redirection vers Menu Action/Information
+            $eventLog = "Redirection vers Menu Action/Information"
+            eventLogTask
+            menuActionInfo
         }
         "M" {
             # Redirection vers Menu Principal
@@ -288,7 +437,6 @@ function menuActionUser {
 
 # Menu Action Client
 function menuActionClient {
-    Clear-Host
     # Rappel du choix de Client
     Write-Host "`nVous êtes actuellement connecté au Client $clientName`n" -ForegroundColor Cyan
     # Listing des options
@@ -309,6 +457,7 @@ function menuActionClient {
     Write-Host "12 - Installation de logiciel"
     Write-Host "13 - Désinstallation de logiciel"
     Write-Host "14 - Exécution de script sur la machione distante"
+    Write-Host "R - Retour au Menu Action/Information"
     Write-Host "M - Retour au Menu Principal"
     Write-Host "x - Quitter l'outil d'Administration"
 
@@ -390,6 +539,12 @@ function menuActionClient {
 
             } -Credential wilder 
         }
+        "R" {
+            # Redirection vers Menu Action/Information
+            $eventLog = "Redirection vers Menu Action/Information"
+            eventLogTask
+            menuActionInfo
+        }
         "M" {
             # Redirection vers Menu Principal
             $eventLog = "Redirection vers Menu Principal"
@@ -411,7 +566,6 @@ function menuActionClient {
 
 # Menu Information Utilisateur
 function menuInfoUser {
-    Clear-Host
     # Rappel du choix de Client
     Write-Host "`nVous êtes actuellement connecté au Client $clientName`n" -ForegroundColor Cyan
     # Listing des options
@@ -425,6 +579,7 @@ function menuInfoUser {
     Write-Host "5 - Historiques des commandes exécutées par un Utilisateur"
     Write-Host "6 - Droits/Permissions de l'Utilisateur sur un dossier"
     Write-Host "7 - Droits/Permissions de l'Utilisateur sur un fichier"
+    Write-Host "R - Retour au Menu Action/Information"
     Write-Host "M - Retour au Menu Principal"
     Write-Host "x - Quitter l'outil d'Administration"
 
@@ -435,7 +590,7 @@ function menuInfoUser {
     $currentMenu = "INFORMATION UTILISATEUR"
 
     # Redirection en fonction du choix du menu
-    switch ($targeInfoUser) {
+    switch ($targetInfoUser) {
         "1" {
             # Requête pour un nom d'Utilisateur
             $userName = Read-Host "`nPour quel Utilisateur souhaitez-vous connaitre la date de dernière connexion ?"
@@ -444,9 +599,11 @@ function menuInfoUser {
             if ($optionValidate -eq "O") {
                 # Si OK >> Continue
                 Invoke-Command -ComputerName $clientIP -ScriptBlock {
-                    Get-WinEvent -LogName Security | Where-Object { $_.ID -eq 4624 } | Select-Object -Property TimeCreated, @{Name = 'userName'; Expression = { $_.Properties[5].Value } } -First 1
+                    Get-LocalUser -name $using:UserName | Sort-Object LastLogon | Select-Object Name, Lastlogon -Last 1
                 } -Credential wilder
+                # Création des variables de Logs + Prise de Logs >> Retour au Menu
                 $eventLog = "Requête Information Date dernière connexion de $userName sur $clientName"
+                $eventTarget = $userName
                 eventLogTask
                 $infoLogPreview = ""
                 infoLogTask
@@ -466,9 +623,11 @@ function menuInfoUser {
             if ($optionValidate -eq "O") {
                 # Si OK >> Continue
                 Invoke-Command -ComputerName $clientIP -ScriptBlock {
-                    Get-LocalUser | Select-Object $userName, LastPasswordChangeTimestamp 
+                    net user $using:userName | Select-String "Mot de passeÿ: dernier changmt." 
                 } -Credential wilder
+                # Création des variables de Logs + Prise de Logs >> Retour au Menu
                 $eventLog = "Requête Information Date dernière modification MDP de $userName sur $clientName"
+                $eventTarget = $userName
                 eventLogTask
                 $infoLogPreview = ""
                 infoLogTask
@@ -488,9 +647,11 @@ function menuInfoUser {
             if ($optionValidate -eq "O") {
                 # Si OK >> Continue
                 Invoke-Command -ComputerName $clientIP -ScriptBlock {
-                    Get-WmiObject -Class Win32_ComputerSystem | Select-Object $userName
+                    Get-WmiObject -Class Win32_ComputerSystem | Select-Object userName
                 } -Credential wilder
+                # Création des variables de Logs + Prise de Logs >> Retour au Menu
                 $eventLog = "Requête Information Liste des sessions ouvertes par $userName sur $clientName"
+                $eventTarget = $userName
                 eventLogTask
                 $infoLogPreview = ""
                 infoLogTask
@@ -510,9 +671,11 @@ function menuInfoUser {
             if ($optionValidate -eq "O") {
                 # Si OK >> Continue
                 Invoke-Command -ComputerName $clientIP -ScriptBlock {
-                    Get-LocalGroup -Member $UserName
+                    net user $using:UserName | Select-String "groupes"
                 } -Credential wilder
+                # Création des variables de Logs + Prise de Logs >> Retour au Menu
                 $eventLog = "Requête Information Groupe d'appartenance de $userName sur $clientName"
+                $eventTarget = $userName
                 eventLogTask
                 $infoLogPreview = ""
                 infoLogTask
@@ -526,9 +689,11 @@ function menuInfoUser {
         }
         "5" {
             Invoke-Command -ComputerName $clientIP -ScriptBlock {
-
+                Get-Content -path C:\Users\wilder\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt
             } -Credential wilder
+            # Création des variables de Logs + Prise de Logs >> Retour au Menu
             $eventLog = "Requête Information Historique des commandes exécutées par $userName sur $clientName"
+            $eventTarget = $userName
             eventLogTask
             $infoLogPreview = ""
             infoLogTask
@@ -540,24 +705,40 @@ function menuInfoUser {
             }
         }
         "6" {
+            $userName = "wilder"
+            $folderName = "Pour quel dossier souhaitez-vous connaître les droits et permissions ?"
             Invoke-Command -ComputerName $clientIP -ScriptBlock {
-
-            } -Credential wilder
+                param($folderName, $userName)
+                Get-Acl -Path $folderName | Select-Object -ExpandProperty Access | Where-Object { $_.IdentityReference -match $userName }
+            } -Credential wilder -ArgumentList $folderName, $userName
+            # Création des variables de Logs + Prise de Logs >> Retour au Menu
             $eventLog = "Requête Information Drtois/Permissions de l'utilisateur sur le dossier $folderName sur $clientName"
+            $eventTarget = $userName
             eventLogTask
             $infoLogPreview = ""
             infoLogTask
             menuInfoUser
         }
         "7" {
+            $userName = "wilder"
+            $fileName = Read-Host "Pour quel dossier souhaitez-vous connaître les droits et permissions ?"
             Invoke-Command -ComputerName $clientIP -ScriptBlock {
-
-            } -Credential wilder
+                param($fileName, $userName)
+                Get-Acl -Path $fileName | Select-Object -ExpandProperty Access | Where-Object { $_.IdentityReference -match $userName }
+            } -Credential wilder -ArgumentList $fileName, $userName
+            # Création des variables de Logs + Prise de Logs >> Retour au Menu
             $eventLog = "Requête Information Drois/Permissions de l'utilisateur sur le fichier $fileName sur $clientName"
+            $eventTarget = $userName
             eventLogTask
             $infoLogPreview = ""
             infoLogTask
             menuInfoUser
+        }
+        "R" {
+            # Redirection vers Menu Action/Information
+            $eventLog = "Redirection vers Menu Action/Information"
+            eventLogTask
+            menuActionInfo
         }
         "M" {
             # Redirection vers Menu Principal
@@ -580,7 +761,6 @@ function menuInfoUser {
 
 # Menu Information Client
 function menuInfoClient {
-    Clear-Host
     # Rappel du choix de Client
     Write-Host "`nVous êtes actuellement connecté au Client $clientName`n" -ForegroundColor Cyan
     # Listing des options
@@ -598,6 +778,7 @@ function menuInfoClient {
     Write-Host "9 - Utilisation de la RAM"
     Write-Host "10 - Utilisation de Disque"
     Write-Host "11 - Utilisation du Processeur"
+    Write-Host "R - Retour au Menu Action/Information"
     Write-Host "M - Retour au Menu Principal"
     Write-Host "x - Quitter l'outil d'Administration"
 
@@ -614,18 +795,23 @@ function menuInfoClient {
                 $osVersion = (Get-WmiObject -Class Win32_OperatingSystem).Caption
             } -Credential wilder
             Write-Host "`nVersion de l'OS : $osVersion`n"
+            # Création des variables de Logs + Prise de Logs >> Retour au Menu
             $eventLog = "Requête Information Version OS de $clientName"
+            $eventTarget = $clientName
             eventLogTask
             $infoLogPreview = "Version de l'OS : $osVersion"
             infoLogTask
             menuInfoClient
         }
         "2" {
+            Write-Host "`nNombre de disques installés :`n"
             Invoke-Command -ComputerName $clientIP -ScriptBlock {
-                $numberOfDisks = (Get-CimInstance -ClassName Win32_DiskDrive).Count
+                Get-Disk
             } -Credential wilder
             Write-Host "`nNombre de disques installés : $numberOfDisks`n"
+            # Création des variables de Logs + Prise de Logs >> Retour au Menu
             $eventLog = "Requête Information Nombre de disque de $clientName"
+            $eventTarget = $clientName
             eventLogTask
             $infoLogPreview = "Nombre de disques installés : $numberOfDisks"
             infoLogTask
@@ -636,7 +822,9 @@ function menuInfoClient {
             Invoke-Command -ComputerName $clientIP -ScriptBlock {
                 Get-WmiObject -Class Win32_DiskPartition | Select-Object DeviceID, Name, Size, Type
             } -Credential wilder
+            # Création des variables de Logs + Prise de Logs >> Retour au Menu
             $eventLog = "Requête Information sur les partitions de $clientName"
+            $eventTarget = $clientName
             eventLogTask
             $infoLogPreview = ""
             infoLogTask
@@ -647,7 +835,9 @@ function menuInfoClient {
             Invoke-Command -ComputerName $clientIP -ScriptBlock {
                 Get-WmiObject -Class Win32_Product | Select-Object -Property Name
             } -Credential wilder
+            # Création des variables de Logs + Prise de Logs >> Retour au Menu
             $eventLog = "Requête Information Liste des application/paquets installés de $clientName"
+            $eventTarget = $clientName
             eventLogTask
             $infoLogPreview = ""
             infoLogTask
@@ -658,7 +848,9 @@ function menuInfoClient {
             Invoke-Command -ComputerName $clientIP -ScriptBlock {
                 Get-Service | Where-Object { $_.Status -eq 'Running' }
             } -Credential wilder
+            # Création des variables de Logs + Prise de Logs >> Retour au Menu
             $eventLog = "Requête Information Liste des services en cours d'exécution de $clientName"
+            $eventTarget = $clientName
             eventLogTask
             $infoLogPreview = ""
             infoLogTask
@@ -669,7 +861,9 @@ function menuInfoClient {
             Invoke-Command -ComputerName $clientIP -ScriptBlock {
                 Get-LocalUser | Select-Object Name
             } -Credential wilder
+            # Création des variables de Logs + Prise de Logs >> Retour au Menu
             $eventLog = "Requête Information Liste des utilisateur locaux de $clientName"
+            $eventTarget = $clientName
             eventLogTask
             $infoLogPreview = ""
             infoLogTask
@@ -680,7 +874,9 @@ function menuInfoClient {
             Invoke-Command -ComputerName $clientIP -ScriptBlock {
                 Get-WmiObject Win32_Processor | Select-Object Name, Manufacturer, MaxClockSpeed, NumberOfCores, NumberOfLogicalProcessors
             } -Credential wilder
+            # Création des variables de Logs + Prise de Logs >> Retour au Menu
             $eventLog = "Requête Information Type de CPU de $clientName"
+            $eventTarget = $clientName
             eventLogTask
             $infoLogPreview = ""
             infoLogTask
@@ -691,7 +887,9 @@ function menuInfoClient {
             Invoke-Command -ComputerName $clientIP -ScriptBlock {
                 Get-CimInstance -ClassName Win32_OperatingSystem | Select-Object TotalVisibleMemorySize, FreePhysicalMemory
             } -Credential wilder
+            # Création des variables de Logs + Prise de Logs >> Retour au Menu
             $eventLog = "Requête Information Mémoire RAM totale de $clientName"
+            $eventTarget = $clientName
             eventLogTask
             $infoLogPreview = ""
             infoLogTask
@@ -702,7 +900,9 @@ function menuInfoClient {
             Invoke-Command -ComputerName $clientIP -ScriptBlock {
                 Get-CimInstance -ClassName Win32_OperatingSystem | Select-Object TotalVisibleMemorySize, FreePhysicalMemory
             } -Credential wilder
+            # Création des variables de Logs + Prise de Logs >> Retour au Menu
             $eventLog = "Requête Information Utilisation de la RAM de $clientName"
+            $eventTarget = $clientName
             eventLogTask
             $infoLogPreview = ""
             infoLogTask
@@ -713,7 +913,9 @@ function menuInfoClient {
             Invoke-Command -ComputerName $clientIP -ScriptBlock {
                 Get-WmiObject Win32_LogicalDisk -Filter "DeviceID='C:'" | Select-Object -Property FreeSpace, Size
             } -Credential wilder
+            # Création des variables de Logs + Prise de Logs >> Retour au Menu
             $eventLog = "Requête Information Utilisation du disque de $clientName"
+            $eventTarget = $clientName
             eventLogTask
             $infoLogPreview = ""
             infoLogTask
@@ -724,11 +926,19 @@ function menuInfoClient {
             Invoke-Command -ComputerName $clientIP -ScriptBlock {
                 Get-Counter '\Processor(_Total)\% Processor Time'
             } -Credential wilder
+            # Création des variables de Logs + Prise de Logs >> Retour au Menu
             $eventLog = "Requête Information Utilisation du Processeur de $clientName"
+            $eventTarget = $clientName
             eventLogTask
             $infoLogPreview = ""
             infoLogTask
             menuInfoClient
+        }
+        "R" {
+            # Redirection vers Menu Action/Information
+            $eventLog = "Redirection vers Menu Action/Information"
+            eventLogTask
+            menuActionInfo
         }
         "M" {
             # Redirection vers Menu Principal
@@ -751,7 +961,6 @@ function menuInfoClient {
 
 # Menu Consulations Logs
 function menuLogMenu {
-    Clear-Host
     # Listing des options
     Write-Host "MENU CONSULATIONS LOGS" -ForegroundColor Cyan
     Write-Host "Sélectionnez un choix parmi :" -ForegroundColor Cyan
@@ -773,7 +982,7 @@ function menuLogMenu {
     # Redirection en fonction du choix du menu
     switch ($targetLogMenu) {
         "1" {
-            # Nom du Client prédéfini dasn variable
+            # Nom du Client prédéfini dans variable
             $clientName = "CLILIN01"
             Write-Host "`nVous avez sélectionné le Client $clientName`n"
             # Demande de confirmation du Client
@@ -800,7 +1009,7 @@ function menuLogMenu {
             }
         }
         "2" {
-            # Nom du Client prédéfini dasn variable
+            # Nom du Client prédéfini dans variable
             $clientName = "CLILIN02"
             Write-Host "`nVous avez sélectionné le Client $clientName`n"
             # Demande de confirmation du Client
@@ -827,7 +1036,7 @@ function menuLogMenu {
             }
         }
         "3" {
-            # Nom du Client prédéfini dasn variable
+            # Nom du Client prédéfini dans variable
             $clientName = "CLIWIN01"
             Write-Host "`nVous avez sélectionné le Client $clientName`n"
             # Demande de confirmation du Client
@@ -854,7 +1063,7 @@ function menuLogMenu {
             }
         }
         "4" {
-            # Nom du Client prédéfini dasn variable
+            # Nom du Client prédéfini dans variable
             $clientName = "CLIWIN02"
             Write-Host "`nVous avez sélectionné le Client $clientName`n"
             # Demande de confirmation du Client
@@ -881,7 +1090,7 @@ function menuLogMenu {
             }
         }
         "U" {
-            # Reaquête du nom d'Utilisateur à rechercher
+            # Requête du nom d'Utilisateur à rechercher
             $userTarget = Read-Host "`nPour quel Utilisateur souhaitez-vous consulter les Logs ?"
             # Demande de confirmation de l'Utilisateur
             $userValidate = Read-Host "`nConfirmez-vous vouloir faire une recherche pour l'Utilisateur $userTarget ? (O/n)"
