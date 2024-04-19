@@ -12,7 +12,7 @@
 
 ## Arborescence des scripts
 
-Les deux scripts Powershell est bash ont été rédigé selon la même arborescence.
+Les deux scripts Powershell et bash ont été rédigés selon la même arborescence.
 
 Nous démarrons le script sur un Menu Principal, et poursuivons en naviguant dans les différents menus, ceci nous permet d'accéder rapidement à l'action ou à l'information escomptée
 
@@ -22,13 +22,13 @@ Voici un aperçu du déroulé du script en mode graphique
 
 ## **Utilisation du script bash**
 
-Si la procédure d'installation a été respecté, le script se situe dans le dossier personnel de l'Administrateur `root@SRVLX01:~#`
+Si la procédure d'installation a été respectée, le script se situe dans le dossier personnel de l'Administrateur `root@SRVLX01:~#`
 
 Il est possible de démarrer le script via les commandes :
 * `bash admin-tool.sh`
-* `./admin-tool.sh` (uniquement si les droits d'exécution sont autorisées)
+* `./admin-tool.sh` (uniquement si les droits d'exécution sont autorisés)
 
-Dans le cas, où vous procédez à une Action/Information sur un Client, si vous souhaitez changer de Client, il est nécessaire de revenir au Menu Principal
+Dans le cas où vous procédez à une Action/Information sur un Client, si vous souhaitez changer de Client, il est nécessaire de revenir au Menu Principal
 
 ### Preview du script bash
 
