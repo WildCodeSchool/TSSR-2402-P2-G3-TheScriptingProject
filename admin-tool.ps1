@@ -1509,7 +1509,7 @@ function eventLogTask {
 function infoLogTask {
     Add-Content -Path C:\Users\Administrator\Documents\info_$eventTarget`_$(Get-Date -Format yyyyMMdd).txt -Value "$(Get-Date -Format yyyyMMdd)-$(Get-Date -Format HHmmss)-$env:USERNAME-$eventLog"
     Write-Host "`nLes informations recueillies sont disponibles dans le fichier situé dans C:\Users\Administrator\Documents\info_$eventTarget`_$(Get-Date -Format yyyyMMdd).txt`n" -ForegroundColor Cyan
-    $infoLogPreview | Tee-Object -Append -FilePath C:\Users\Administrator\Documents\info_$eventTarget`_$(Get-Date -Format yyyyMMdd).txt -Value "$infoLogPreview"
+    $infoLogPreview | Tee-Object -Append -FilePath C:\Users\Administrator\Documents\info_$eventTarget`_$(Get-Date -Format yyyyMMdd).txt
 }
 
 
