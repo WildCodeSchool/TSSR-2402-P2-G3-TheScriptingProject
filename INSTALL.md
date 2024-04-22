@@ -31,14 +31,16 @@
 
 Une fois les configurations faites, nous devons pour la partie Linux ajouter un lien _ssh_ entre le Serveur et les Clients.
 
+Il nous faudra également paramètrer les Clients Windows afin d'autoriser la commande `Invoke-Command` du sscript Powershell
+
 ## **Installation des sources nécessaires au bon fonctionnement**
 
-Bien entendu, il est nécessaire avant toute chose de procéder à une mise à jour système, aussi bien sur les Serveurs, que sur les Clients
+Bien entendu, il est nécessaire avant toute chose de procéder à une mise à jour système, aussi bien sur les Serveurs, que sur les Clients.
 
 * bash : (sudo) `apt update && apt upgrade -y`
 * Windows : Mise à jour système en mode graphique
 
-Il vous faudra également donner les droits d'accés au scripts en terme d'exécution, si cela n'est pas déjà fait.
+Il vous faudra également donner les droits d'accès au script en terme d'exécution, si cela n'est pas déjà fait.
 
 ### **Installation et configuration ssh sur Linux**
 
@@ -48,17 +50,17 @@ Assurez-vous que votre système est à jour avec `apt update && apt upgrade -y`
 
 Installez le paquet `openssh-server` avec `apt install openssh-server`
 
-Il vous sera demander durant l'installation si vous souhaitez continuer, saisissez `Y` puis `Entrée`
+Il vous sera demandé durant l'installation si vous souhaitez continuer, saisissez `Y` puis `Entrée`
 
-![ssh_Install_SRV_01](attachment/ssh_Install_SRV_01.JPG)
+![ssh_Install_SRV_01](attachment/pics/ssh_Install_SRV_01.JPG)
 
 L'installation se termine alors toute seule
 
-![ssh_Install_SRV_02](attachment/ssh_Install_SRV_02.JPG)
+![ssh_Install_SRV_02](attachment/pics/ssh_Install_SRV_02.JPG)
 
 A la fin de l'installation, vos clés ssh sont disponibles dans le répertoire `/etc/ssh`
 
-![ssh_Install_SRV__03](attachment/ssh_Install_SRV_03.JPG)
+![ssh_Install_SRV__03](attachment/pics/ssh_Install_SRV_03.JPG)
 
 #### **Installation et configuration ssh sur Client Ubuntu**
 
@@ -66,17 +68,17 @@ De la même manière que pour le Serveur Debian, assurez-vous tout d'abord que v
 
 Installez le paquet `openssh-server` avec `sudo apt install openssh-server`
 
-Il vous sera demander durant l'installation si vous souhaitez continuer, saisissez `O` puis `Entrée`
+Il vous sera demandé durant l'installation si vous souhaitez continuer, saisissez `O` puis `Entrée`
 
-![ssh_Install_CLI_01](attachment/ssh_Install_CLI_01.JPG)
+![ssh_Install_CLI_01](attachment/pics/ssh_Install_CLI_01.JPG)
 
 L'installation se termine alors toute seule
 
-![ssh_Install_CLI_02](attachment/ssh_Install_CLI_02.JPG)
+![ssh_Install_CLI_02](attachment/pics/ssh_Install_CLI_02.JPG)
 
 A la fin de l'installation, vos clés ssh sont disponibles dans le répertoire `/etc/ssh`
 
-![ssh_Install_CLI__03](attachment/ssh_Install_CLI_03.JPG)
+![ssh_Install_CLI__03](attachment/pics/ssh_Install_CLI_03.JPG)
 
 ### **Installation et configuration sur Windows**
 
@@ -88,18 +90,44 @@ Celui-ci est disponible sur la page [https://aka.ms/PSWindows](https://learn.mic
 
 Nous avons fait le choix d'installer le [Package MSI](https://learn.microsoft.com/fr-fr/powershell/scripting/install/installing-powershell-on-windows?view=powershell-7.4#msi)
 
+Téléchargez le logiciel d'installation, puis lancez l'installation, en conservant les options par défaut de l'assistant, une fois l'installation terminée, vous pourrez profiter de `Powershell 7 (x64)`
+
 Nous passons donc via Powershell 7 (x64) qu'il faut lancer en mode Adminstrateur (clique-droit sur le logiciel puis `Run as administrator`)
 
-![Powershell_Launch](attachment/Powershell_Launch.JPG)
+![Powershell_Launch](attachment/pics/Powershell_Launch.JPG)
 
 La version 7.4.2 est disponible sur le Serveur
 
-![Powershell_7_4_2](attachment/Powershell_7_4_2.JPG)
+![Powershell_7_4_2](attachment/pics/Powershell_7_4_2.JPG)
 
 #### **Installation et configuration sur Client Windows 10 Pro**
 
+Afin d'établir un lien entre le Serveur et les Clients via la commande `Invoke-Command`, il est nécessaire de procéder à quelques ajustements
 
+1) Vérification que le Parefeu est bien désactivé sur les Clients, ainsi que sur le Serveur
 
+![Win_Config_CLI_01](attachment/pics/Win_Config_CLI_01.JPG)
+
+![Win_Config_SRV_01](attachment/pics/Win_Config_SRV_01.JPG)
+
+2) Configuration sur les Clients du démarrage automatique du service _Registre Distant_ via la commande Powershell `Set-Service -Name winrm -StartupType 'Automatic'`
+
+3) Ajouter un compte `Administrator` sur chacun des Clients, le compte doit être ajouté au Groupe _Administrateur_
+
+![Win_Config_CLI_02](attachment/pics/Win_Config_CLI_02.JPG)
+
+4) Sur les Clients, sous Powershell lancé en mode Administrateur, récupérez l'index de l'interface avec la commande `Get-NetConnectionProfile`, puis modifiez l'interface avec la commande `Set-NetConnectionProfile -InterfaceIndex <Index> -NetworkCategory Private`
+
+5) Sur les Clients, ouvrez `cmd.exe` en mode Administrateur, puis saisissez la commande `reg add HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v LocalAccountTokenFilterPolicy /t REG_DWORD /d 1 /f`
+
+6) Sur le Serveur, ajouter chacun des Clients à la liste des hôtes de confiance avec la commande `Set-Item WSMan:\localhost\Client\TrustedHosts -Value "<NomDuPcClient>"`
+
+##### Installation complémentaire sur les Clients Windows
+
+Il est possible via le script de mettre à jour les Clients, afin que cette commande fonctionne parfaitement, certains pré-requis sont à effectuer sur ceux-ci
+
+* Il vous faut dans un premier temps installer sur chaque Client `PSWindowsUpdate` via la commande `Install-Module -Name PSWindowsUpdate -RequiredVersion 2.2.0.3`
+* Puis vous devez retirer la restriction des scripts via la commande `Set-ExecutionPolicy Unrestricted` (oui pour tout)
 
 ### **Installation et configurations des composants additionnels**
 
@@ -107,6 +135,6 @@ Différents scripts sont fournis avec la Documentation, à savoir :
 * Un Script Powershell `admin-tool.ps1` qui devra être installé dans le `C:\Users\Administrator\` sur le Serveur Windows
 * Un Script Powershell `hello.ps1` qui devra être installé dans le `C:\Users\wilder\` sur chacun des Clients Windows
 * Un Script bash `admin-tool.sh` qui devra être installé à la racine du dossier personnel de `root` sur le Serveur
-* Un Script bash `hello.sh` qui devra être installé à la racin du dossier personnel de `wilder` sur chaucun des Clients Ubuntu
+* Un Script bash `hello.sh` qui devra être installé à la racine du dossier personnel de `wilder` sur chacun des Clients Ubuntu
 
 Vous pouvez trouver tous ces scripts dans le dossier `attachment` du dépôt.
