@@ -80,6 +80,10 @@ A la fin de l'installation, vos clés ssh sont disponibles dans le répertoire `
 
 ![ssh_Install_CLI__03](attachment/pics/ssh_Install_CLI_03.JPG)
 
+##### Installation complémentaire sur les Clients Ubuntu
+
+Afin d'obtenir le détail de l'utlisation du processeur, nous avons besoin d'ajouter le paquet `sysstat` avec la commande `sudo apt install sysstat` sur chaque Client
+
 ### **Installation et configuration sur Windows**
 
 #### **Installation et configuration sur Windows Server 2022**
