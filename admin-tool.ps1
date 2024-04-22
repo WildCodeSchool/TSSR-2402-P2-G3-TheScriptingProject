@@ -405,9 +405,9 @@ function fonction_menu_info_ordinateur_client {
 function Version_de_l_OS {
     Clear-Host
     Write-Host "Version de l'OS :"
-    Invoke-Command -ComputerName $ipAddress -ScriptBlock { $infoLogPreview = (Get-WmiObject -Class Win32_OperatingSystem).Caption
-        Write-Host "Version de l'OS : $infoLogPreview"
+    $infoLogPreview = Invoke-Command -ComputerName $ipAddress -ScriptBlock { (Get-WmiObject -Class Win32_OperatingSystem).Caption
     }
+    $infoLogPreview
     $eventLog = "Requête Version OS sur $clientName"
     eventLogTask
     $eventTarget = $clientName
@@ -419,9 +419,10 @@ function Version_de_l_OS {
 
 function Nombre_de_disques {
     Clear-Host
-    Invoke-Command -ComputerName $ipAddress -ScriptBlock { $infoLogPreview = Get-Disk 
+    Write-Host = "Nombre de disque :"
+    $infoLogPreview = Invoke-Command -ComputerName $ipAddress -ScriptBlock { Get-Disk 
     }
-    Write-Host = "Nombre de disque : $infoLogPreview"
+    $infoLogPreview
     $eventLog = "Requête Nombre de disque sur $clientName"
     eventLogTask
     $eventTarget = $clientName
@@ -433,7 +434,7 @@ function Nombre_de_disques {
 function Info_partitions {
     Clear-Host
     Write-Host "Infos sur les partitions :"
-    Invoke-Command -ComputerName $ipAddress -ScriptBlock { $infoLogPreview = Get-WmiObject -Class Win32_DiskPartition | Select-Object DeviceID, Name, Size, Type
+    $infoLogPreview = Invoke-Command -ComputerName $ipAddress -ScriptBlock { Get-WmiObject -Class Win32_DiskPartition | Select-Object DeviceID, Name, Size, Type
     }
     $infoLogPreview
     $eventLog = "Requête Nombre de disque sur $clientName"
@@ -447,7 +448,7 @@ function Info_partitions {
 function Liste_des_appli_installées {
     Clear-Host
     Write-Host "Liste des paquets installés :"
-    Invoke-Command -ComputerName $ipAddress -ScriptBlock { $infoLogPreview = Get-WmiObject -Class Win32_Product | Select-Object -Property Name
+    $infoLogPreview = Invoke-Command -ComputerName $ipAddress -ScriptBlock { Get-WmiObject -Class Win32_Product | Select-Object -Property Name
     }
     $infoLogPreview
     $eventLog = "Requête Liste applications installées sur $clientName"
@@ -461,7 +462,7 @@ function Liste_des_appli_installées {
 function Liste_des_services_en_cours_d_utilisation {
     Clear-Host
     Write-Host "Liste des services en cours d'utilisation :"
-    Invoke-Command -ComputerName $ipAddress -ScriptBlock { $infoLogPreview = Get-Service | Where-Object { $_.Status -eq 'Running' }
+    $infoLogPreview = Invoke-Command -ComputerName $ipAddress -ScriptBlock { Get-Service | Where-Object { $_.Status -eq 'Running' }
     }
     $infoLogPreview
     $eventLog = "Requête Liste services en utilisation sur $clientName"
@@ -475,7 +476,7 @@ function Liste_des_services_en_cours_d_utilisation {
 function Liste_des_utilisateurs_locaux {
     Clear-Host
     Write-Host "Liste des utilisateurs locaux :"
-    Invoke-Command -ComputerName $ipAddress -ScriptBlock { $infoLogPreview = Get-LocalUser | Select-Object Name
+    $infoLogPreview = Invoke-Command -ComputerName $ipAddress -ScriptBlock { Get-LocalUser | Select-Object Name
     }
     $infoLogPreview
     $eventLog = "Requête Liste utilisateurs locaux sur $clientName"
@@ -489,7 +490,7 @@ function Liste_des_utilisateurs_locaux {
 function Infos_sur_le_CPU {
     Clear-Host
     Write-Host "Infos sur le CPU :"
-    Invoke-Command -ComputerName $ipAddress -ScriptBlock { $infoLogPreview = Get-WmiObject Win32_Processor | Select-Object Name, Manufacturer, MaxClockSpeed, NumberOfCores, NumberOfLogicalProcessors
+    $infoLogPreview = Invoke-Command -ComputerName $ipAddress -ScriptBlock { Get-WmiObject Win32_Processor | Select-Object Name, Manufacturer, MaxClockSpeed, NumberOfCores, NumberOfLogicalProcessors
     }
     $infoLogPreview
     $eventLog = "Requête Information CPU sur $clientName"
@@ -503,7 +504,7 @@ function Infos_sur_le_CPU {
 function Memoire_RAM_totale {
     Clear-Host
     Write-Host "RAM totale et utilisation :"
-    Invoke-Command -ComputerName $ipAddress -ScriptBlock { $infoLogPreview = Get-CimInstance -ClassName Win32_OperatingSystem | Select-Object TotalVisibleMemorySize, FreePhysicalMemory
+    $infoLogPreview = Invoke-Command -ComputerName $ipAddress -ScriptBlock { Get-CimInstance -ClassName Win32_OperatingSystem | Select-Object TotalVisibleMemorySize, FreePhysicalMemory
     }
     $infoLogPreview
     $eventLog = "Requête Mémoire RAM totale sur $clientName"
@@ -517,7 +518,7 @@ function Memoire_RAM_totale {
 function Utilisation_du_disque {
     Clear-Host
     Write-Host "Utilisation du disque :"
-    Invoke-Command -ComputerName $ipAddress -ScriptBlock { $infoLogPreview = Get-WmiObject Win32_LogicalDisk -Filter "DeviceID='C:'" | Select-Object -Property FreeSpace, Size
+    $infoLogPreview = Invoke-Command -ComputerName $ipAddress -ScriptBlock { Get-WmiObject Win32_LogicalDisk -Filter "DeviceID='C:'" | Select-Object -Property FreeSpace, Size
     }
     $infoLogPreview
     $eventLog = "Requête Utilisation du disque sur $clientName"
@@ -531,7 +532,7 @@ function Utilisation_du_disque {
 function Utilisation_du_processeur {
     Clear-Host
     Write-Host "Utilisation du processeur :"
-    Invoke-Command -ComputerName $ipAddress -ScriptBlock { $infoLogPreview = Get-Counter '\Processor(_Total)\% Processor Time'
+    $infoLogPreview = Invoke-Command -ComputerName $ipAddress -ScriptBlock { Get-Counter '\Processor(_Total)\% Processor Time'
     }
     $infoLogPreview
     $eventLog = "Requête Utilisation du processeur sur $clientName"
@@ -577,7 +578,7 @@ function fonction_menu_info_utilisateur {
 function Derniere_connection_utilisateur {
     Clear-Host
     $UserName = Read-Host "Rentrez un nom d'utilisateur "
-    Invoke-Command -ComputerName $ipAddress -ScriptBlock { $infoLogPreview = Get-LocalUser -name $using:UserName | Sort-Object LastLogon | Select-Object Name, Lastlogon -Last 1 }
+    $infoLogPreview = Invoke-Command -ComputerName $ipAddress -ScriptBlock { Get-LocalUser -name $using:UserName | Sort-Object LastLogon | Select-Object Name, Lastlogon -Last 1 }
     $infoLogPreview
     $eventLog = "Requête dernière connexion de $UserName sur $clientName"
     eventLogTask
@@ -589,7 +590,7 @@ function Derniere_connection_utilisateur {
 function Derniere_modification_mdp {
     Clear-Host
     $UserName = Read-Host "Rentrez un nom d'utilisateur "
-    Invoke-Command -ComputerName $ipAddress -ScriptBlock { $infoLogPreview = net user $using:UserName | Select-String "Mot de passeÿ: dernier changmt." }
+    $infoLogPreview = Invoke-Command -ComputerName $ipAddress -ScriptBlock { net user $using:UserName | Select-String "Mot de passeÿ: dernier changmt." }
     $infoLogPreview
     $eventLog = "Requête dernière modification de mot de passe de $UserName sur $clientName"
     eventLogTask
@@ -601,7 +602,7 @@ function Derniere_modification_mdp {
 #3 Liste des sessions ouvertes par l'utilisateur
 function Liste_sessions_ouverte_par_utilisateur {
     $UserName = Read-Host "Rentrez un nom d'utilisateur "
-    Invoke-Command -ComputerName $ipAddress -ScriptBlock { Get-WmiObject -Class Win32_ComputerSystem | Select-Object $UserName
+    $infoLogPreview = Invoke-Command -ComputerName $ipAddress -ScriptBlock { Get-WmiObject -Class Win32_ComputerSystem | Select-Object $UserName
     }
     $infoLogPreview
     $eventLog = "Requête sessions ouvertes de $UserName sur $clientName"
@@ -614,7 +615,7 @@ function Liste_sessions_ouverte_par_utilisateur {
 #4 Groupe d’appartenance d’un utilisateur
 function Groupe_utilisateur {
     $UserName = Read-Host "Rentrez un nom d'utilisateur "
-    Invoke-Command -ComputerName $ipAddress -ScriptBlock { net user $using:UserName | Select-String "groupes"
+    $infoLogPreview = Invoke-Command -ComputerName $ipAddress -ScriptBlock { net user $using:UserName | Select-String "groupes"
     }
     $infoLogPreview
     $eventLog = "Requête groupe de $UserName sur $clientName"
@@ -626,7 +627,7 @@ function Groupe_utilisateur {
 #5 Historique des commandes exécutées par l'utilisateur
 function Historique_utilisateur {
     $UserName = Read-Host "Rentrez un nom d'utilisateur "
-    Invoke-Command -ComputerName $ipAddress -ScriptBlock { Get-Content -path C:\Users\wilder\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt }
+    $infoLogPreview = Invoke-Command -ComputerName $ipAddress -ScriptBlock { Get-Content -path C:\Users\wilder\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt }
     $infoLogPreview
     $eventLog = "Requête historique de $UserName sur $clientName"
     eventLogTask
@@ -639,9 +640,9 @@ function Historique_utilisateur {
 #6 Droits et permissions de l’utilisateur sur un dossier
 function Droit_sur_un_dossier {
     $dossier = Read-Host "Saisissez le chemin du dossier"
-    Invoke-Command -ComputerName $ipAddress -ScriptBlock {
+    $infoLogPreview = Invoke-Command -ComputerName $ipAddress -ScriptBlock {
         param($dossier, $UserName)
-        $infoLogPreview = Get-Acl -Path $dossier | Select-Object -ExpandProperty Access | Where-Object { $_.IdentityReference -match $UserName }
+        Get-Acl -Path $dossier | Select-Object -ExpandProperty Access | Where-Object { $_.IdentityReference -match $UserName }
     } -ArgumentList $dossier, $UserName
     $infoLogPreview
     $eventLog = "Requête droit sur dossier de $UserName sur $clientName"
@@ -656,9 +657,9 @@ function Droit_sur_un_dossier {
 #7 Droits/permissions de l’utilisateur sur un fichier
 function Droit_sur_un_fichier {
     $fichier = Read-Host "Saisissez le chemin du fichier"
-    Invoke-Command -ComputerName $ipAddress -ScriptBlock {
+    $infoLogPreview = Invoke-Command -ComputerName $ipAddress -ScriptBlock {
         param($fichier, $UserName)
-        $infoLogPreview = Get-Acl -Path $fichier | Select-Object -ExpandProperty Access | Where-Object { $_.IdentityReference -match $UserName }
+        Get-Acl -Path $fichier | Select-Object -ExpandProperty Access | Where-Object { $_.IdentityReference -match $UserName }
     } -ArgumentList $dossier, $UserName
     $infoLogPreview
     $eventLog = "Requête droit fichier de $UserName sur $clientName"
