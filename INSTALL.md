@@ -137,7 +137,6 @@ Il est possible via le script de mettre à jour les Clients, afin que cette comm
 
 Différents scripts sont fournis avec la Documentation, à savoir :
 * Un Script Powershell `admin-tool.ps1` qui devra être installé dans le `C:\Users\Administrator\` sur le Serveur Windows
-* Un Script Powershell `hello.ps1` qui devra être installé dans le `C:\Users\wilder\` sur chacun des Clients Windows
 * Un Script bash `admin-tool.sh` qui devra être installé à la racine du dossier personnel de `root` sur le Serveur
 * Un Script bash `hello.sh` qui devra être installé à la racine du dossier personnel de `wilder` sur chacun des Clients Ubuntu
 
