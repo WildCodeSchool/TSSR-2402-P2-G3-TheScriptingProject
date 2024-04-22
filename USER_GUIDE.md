@@ -64,7 +64,11 @@ Comme pour le script bash, dans le cas où vous effectuez une Action/Information
 
 ### Preview du script Powershell
 
+![bash_Preview_01](attachment/pics/PS_Preview_01.JPG)
 
+![bash_Preview_02](attachment/pics/PS_Preview_02.JPG)
+
+![bash_Preview_03](attachment/pics/PS_Preview_03.JPG)
 
 Vous pourrez noter que les messages en Bleu foncé correspondent à des informations pour l'Utilisateur.
 
