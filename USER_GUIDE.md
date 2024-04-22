@@ -28,7 +28,9 @@ Il est possible de démarrer le script via les commandes :
 * `bash admin-tool.sh`
 * `./admin-tool.sh` (uniquement si les droits d'exécution sont autorisés)
 
-Dans le cas où vous procédez à une Action/Information sur un Client, si vous souhaitez changer de Client, il est nécessaire de revenir au Menu Principal.
+
+Dans le cas où vous procédez à une Action/Information sur un Client, si vous souhaitez changer de Client, il est nécessaire de revenir au Menu Principal
+
 
 ### Preview du script bash
 

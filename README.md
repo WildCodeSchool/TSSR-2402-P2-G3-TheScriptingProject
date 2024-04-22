@@ -33,7 +33,7 @@ La documentation jointe au Projet est constituée de 5 fichiers (dont 3 au forma
 * un script _bash_ fonctionnel
 * un script _Powershell_ fonctionnel
 
-Les deux scripts Powershell et bash, se trouvent dans le dossier `attachment` du dépôt, ainsi que toutes les captures d'écran nécessaires à l'élaboration de la documentation.
+Les deux scripts Powershell et bash se trouvent dans le dossier `attachment` du dépôt, ainsi que toutes les captures d'écran nécessaires à l'élaboration de la documentation.
 
 Un dépôt GitHub a été créé à cet effet : [TSSR-2402-P2-G3-TheScriptingProject](https://github.com/WildCodeSchool/TSSR-2402-P2-G3-TheScriptingProject)
 
